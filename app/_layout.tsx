@@ -29,7 +29,7 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
 
       // already logged go to contractor-screen >>> sure not yet so stay home
-      if(!currentUser) {
+      if(currentUser) {
         router.push("/(screens)/contractor-screen") // depends on user type: Contractor(contractor-screen) | Driver(driver-screen) | Customer(customer-screen)
       } 
     }
