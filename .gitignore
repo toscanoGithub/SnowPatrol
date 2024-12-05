@@ -6,6 +6,9 @@ node_modules/
 #environement variables
 .env
 
+#contains SECRET KEYS IN "extra" property
+app.json
+
 # Expo
 .expo/
 dist/
