@@ -5,6 +5,7 @@ import theme from "../theme.json"
 import { Link, useRouter } from 'expo-router'
 import SignupForm from '../components/signup-form'
 import SigninForm from '../components/signin-form'
+import { LinearGradient } from 'expo-linear-gradient';
 
 const closeIcon = (props: any): IconElement => (
     <Icon
@@ -23,7 +24,7 @@ const auth = () => {
     const [modalType, setModalType] = useState("SIGN IN")
     const [isrewardDay, setIsrewardDay] = useState(false)
     const dismissModal = () => {
-        setModalIsVisible(true)
+        setModalIsVisible(!modalIsVisible)
       };
 
       const [slideAnim] = useState(new Animated.Value(0)); // Initial value for the animation
@@ -82,8 +83,13 @@ const auth = () => {
       
       
       <Modal animationType="slide" transparent={true} visible={modalIsVisible}>
-      <View style={styles.centeredView}>    
+      <View style={styles.centeredView}>  
+      
             <View style={styles.modalView}>
+            <LinearGradient
+        colors={["#0266B1", "#0266B190"]}
+        style={styles.background}
+      />  
               {/* MODAL TITLE */}
               <Text category='h4' style={styles.modalTitle}>{modalType}</Text>
               {/* CLOSE BUTTON */}
@@ -184,12 +190,13 @@ const styles = StyleSheet.create({
     // modal
     centeredView: {
         flex: 1,
+        
       },
       modalView: {
         position:"absolute",
         bottom:0,
         left:0, right:0,
-        backgroundColor: '#ffffff',
+        backgroundColor: "#ffffff",
         borderTopLeftRadius: 45,
         // padding: 35,
         alignItems: 'center',
@@ -253,5 +260,16 @@ const styles = StyleSheet.create({
       title: {
         color: '#fff',
         fontSize: 16,
+      },
+
+
+      background: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: "100%",
+        borderTopLeftRadius: 45,
+    
       },
 })
