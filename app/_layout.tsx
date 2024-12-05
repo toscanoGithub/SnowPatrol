@@ -12,6 +12,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry, Layout, Text } from '@ui-kitten/components';
+import { UserContextProvider } from '@/contexts/UserContext';
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -42,18 +43,20 @@ export default function RootLayout() {
   }
 
   return (
-    <ApplicationProvider {...eva} theme={eva.light}>
-            <IconRegistry icons={EvaIconsPack}/>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-    <Stack screenOptions={{headerShown: false}}>
-        <Stack.Screen name="(screens)/contractor-screen" options={{headerShown: true, title: "Contractor", headerBackVisible: false}}/>
-        <Stack.Screen name="(screens)/driver-screen" options={{headerShown: true, title:"Driver", headerBackVisible: false}}/>
-        <Stack.Screen name="(screens)/customer-screen" options={{headerShown: true, title:"Customer", headerBackVisible: false}}/>
+    <UserContextProvider>
+      <ApplicationProvider {...eva} theme={eva.light}>
+          <IconRegistry icons={EvaIconsPack}/>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack screenOptions={{headerShown: false}}>
+                <Stack.Screen name="(screens)/contractor-screen" options={{headerShown: true, title: "Contractor", headerBackVisible: false}}/>
+                <Stack.Screen name="(screens)/driver-screen" options={{headerShown: true, title:"Driver", headerBackVisible: false}}/>
+                <Stack.Screen name="(screens)/customer-screen" options={{headerShown: true, title:"Customer", headerBackVisible: false}}/>
 
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-    </ApplicationProvider>
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <StatusBar style="auto" />
+          </ThemeProvider>
+      </ApplicationProvider>
+    </UserContextProvider>
   );
 }
