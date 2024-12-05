@@ -13,6 +13,7 @@ export default DriverScreen
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#F7F8FC"
+      flex: 1,
+      backgroundColor: "#F7F8FC"
     }
 })

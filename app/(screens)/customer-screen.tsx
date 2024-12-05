@@ -1,7 +1,10 @@
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useLocalSearchParams } from 'expo-router'
 
 const CustomerScreen = () => {
+  
+  
   return (
     <SafeAreaView style={styles.container}>
       <Text>CustomerScreen</Text>
@@ -13,6 +16,7 @@ export default CustomerScreen
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#F7F8FC"
+      flex: 1,
+      backgroundColor: "#F7F8FC"
     }
 })
