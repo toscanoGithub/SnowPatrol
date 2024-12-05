@@ -13,6 +13,7 @@ import "../../firebase/firebase-config";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore"; 
 import db from '../../firebase/firebase-config';
 import { router } from 'expo-router';
+import { useUserContext } from '@/contexts/UserContext';
 
 interface signupProp {
   dismissModal: () => void;  // Defining the function prop type
@@ -36,6 +37,8 @@ const validationSchema = Yup.object().shape({
 
 
 const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
+
+  const {setUser} = useUserContext();
 
   const [currentUser, setCurrentUser] = useState<User>();
   
@@ -76,10 +79,11 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
       // console.log("Document written with ID: ", docRef.id);
 
       setCurrentUser({id: docRef.id, email: email, companyName: companyName, userType: userType})
+      setUser({id: docRef.id, email: email, companyName: companyName, userType: userType})
 
       dismissModal();
-      router.push({pathname: "/(screens)/contractor-screen", params: {id: docRef.id, email: email, companyName: companyName, userType: userType}});
-      
+      // router.push({pathname: "/(screens)/contractor-screen", params: {id: docRef.id, email: email, companyName: companyName, userType: userType}});
+      router.push("/(screens)/contractor-screen");
 
     } catch (e) {
       console.error("Error adding document: ", e);

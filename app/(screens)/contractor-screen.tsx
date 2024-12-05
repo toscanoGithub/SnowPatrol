@@ -2,17 +2,17 @@ import { SafeAreaView, StyleSheet, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { Text } from '@ui-kitten/components'
+import { useUserContext } from '@/contexts/UserContext'
 
 const ContractorScreen = () => {
+  const {user, setUser} = useUserContext()
+
   const params = useLocalSearchParams()
 
-  useEffect(() => {
-    console.log("--------------------------",params.companyName);
-    
-  }, [])
+  
   return (
     <SafeAreaView style={styles.container}>
-      <Text category='h1'>{params.companyName}</Text>
+      <Text category='h1'>{user?.companyName}</Text>
     </SafeAreaView>
   )
 }
