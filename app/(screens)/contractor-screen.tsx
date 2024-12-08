@@ -1,18 +1,56 @@
 import { SafeAreaView, StyleSheet, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
-import { Text } from '@ui-kitten/components'
+import { AnimationConfig, Icon, Tab, TabBar, Text } from '@ui-kitten/components'
 import { useUserContext } from '@/contexts/UserContext'
+import Header from '../components/header'
+import { IconAnimationRegistry } from '@ui-kitten/components/ui/icon/iconAnimation'
+import theme from "../theme.json"
+
 
 const ContractorScreen = () => {
-  const {user, setUser} = useUserContext()
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
-  const params = useLocalSearchParams()
+  
+  const layoutMainSection = () => {
+    switch (selectedIndex) {
+      case 0:
+        return <View style={{width:"100%", flex:1, marginTop: 10 }}>
+        <Text category='h1'>Drivers</Text>
+        
+      </View>
+      case 1:
+        return <View style={{width:"100%", flex:1, marginTop: 10 }}>
+          <Text category='h1'>Customers</Text>
+          
+        </View>
+      case 2:
+        return <Text category='h1'>Routes</Text>
+        
+      default:
+        break;
+    }
+  }
 
   
   return (
     <SafeAreaView style={styles.container}>
-      <Text category='h1'>{user?.companyName}</Text>
+      <View style={styles.tabbarWrapper}>
+      <TabBar
+      indicatorStyle={{backgroundColor: theme["color-primary-300"], height: 4,}}  
+      selectedIndex={selectedIndex}
+      onSelect={index => setSelectedIndex(index)}
+    >
+      <Tab title={() => <Text style={styles.tab} >Drivers</Text>}   />
+      <Tab title={() => <Text style={styles.tab} >Customers</Text>}   />
+      <Tab title={() => <Text style={styles.tab} >Routes</Text>}   />
+    </TabBar>
+
+    <View style={styles.main}>
+      {layoutMainSection()}
+    </View>
+      </View>
+
     </SafeAreaView>
   )
 }
@@ -23,5 +61,21 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: "#F7F8FC"
+    },
+
+    tabbarWrapper: {
+      backgroundColor:"white",
+      paddingVertical: 25,
+      justifyContent:"center",
+     
+    },
+
+    tab: { color: "#000000", fontSize: 16, paddingVertical: 5 },
+
+    main: {
+      height:"100%",
+      justifyContent:"flex-start",
+      alignItems:"flex-start",
+      padding:5
     }
 })

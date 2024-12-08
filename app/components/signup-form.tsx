@@ -7,10 +7,10 @@ import theme from "../theme.json"
 import {User} from "../../types/User"
 
 // Firebase
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, Auth } from "firebase/auth";
 import "../../firebase/firebase-config";
 
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore"; 
+import { collection, addDoc, query, where, getDocs, doc } from "firebase/firestore"; 
 import db from '../../firebase/firebase-config';
 import { router } from 'expo-router';
 import { useUserContext } from '@/contexts/UserContext';
@@ -39,56 +39,45 @@ const validationSchema = Yup.object().shape({
 const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
 
   const {setUser} = useUserContext();
-
-  const [currentUser, setCurrentUser] = useState<User>();
   
  // REGISTER LOGIC
  const register = (values: FormValues) => {
-  
-    const {email, password, confirmPassword, companyName} = values;
-    const auth = getAuth();
-
-  if(confirmPassword === password) {
-    createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    const user = userCredential.user;
-    addMoreDataToUser(email, companyName, "Contractor")
-  })
-  .catch((error) => {
-    console.log(error.message);
-    if(error.message.split("-").includes("already")) {
-      alert("Email is already in use")
-    } else {
-      alert("Something went wrong, try later or contact the developer")
-    }
-  });
-
-  
-}
-  
+        const {email, password, confirmPassword, companyName} = values;
+        const auth = getAuth();
+      if(confirmPassword === password) {
+          createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          addMoreDataToUser(email, companyName)
+        })
+        .catch((error) => {
+          console.log(error.message);
+          if(error.message.split("-").includes("already")) {
+            alert("Email is already in use")
+          } else {
+            alert("Something went wrong, try later or contact the developer")
+          }
+        });
+      }
  }
 
- const addMoreDataToUser = async (email: string, companyName: string, userType: string) => {
+ const addMoreDataToUser = async (email: string, companyName: string, userType="Contractor") => {
   try {
       const docRef = await addDoc(collection(db, "users"), {
         email,
         companyName,
-        userType,
+        userType
       });
 
-      // console.log("Document written with ID: ", docRef.id);
-
-      setCurrentUser({id: docRef.id, email: email, companyName: companyName, userType: userType})
-      setUser({id: docRef.id, email: email, companyName: companyName, userType: userType})
-
-      dismissModal();
-      // router.push({pathname: "/(screens)/contractor-screen", params: {id: docRef.id, email: email, companyName: companyName, userType: userType}});
-      router.push("/(screens)/contractor-screen");
-
+      setUser({id: docRef.id, email: email, companyName: companyName, userType: "Contractor"})  
+      
+      dismissModal()
+      router.push("/(screens)/contractor-screen")    
     } catch (e) {
       console.error("Error adding document: ", e);
     }
 }
+
+
 
   return (
     <KeyboardAvoidingView

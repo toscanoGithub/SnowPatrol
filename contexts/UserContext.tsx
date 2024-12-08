@@ -11,6 +11,8 @@ type AuthUser = {
 };
 
 type UserContextType = {
+    email: string | undefined;
+    companyName: string;
     user: AuthUser | null;
     setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
 };
