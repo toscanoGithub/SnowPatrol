@@ -6,6 +6,9 @@ import { useUserContext } from '@/contexts/UserContext'
 import Header from '../components/header'
 import { IconAnimationRegistry } from '@ui-kitten/components/ui/icon/iconAnimation'
 import theme from "../theme.json"
+import CustomersTab from '../components/contractor/customers-tab'
+import DriversTab from '../components/contractor/drivers-tab'
+import RoutesTab from '../components/contractor/routes-tab'
 
 
 const ContractorScreen = () => {
@@ -16,16 +19,17 @@ const ContractorScreen = () => {
     switch (selectedIndex) {
       case 0:
         return <View style={{width:"100%", flex:1, marginTop: 10 }}>
-        <Text category='h1'>Drivers</Text>
+        <DriversTab />
         
       </View>
       case 1:
         return <View style={{width:"100%", flex:1, marginTop: 10 }}>
-          <Text category='h1'>Customers</Text>
-          
+          <CustomersTab />
         </View>
       case 2:
-        return <Text category='h1'>Routes</Text>
+        return <View style={{width:"100%", flex:1, marginTop: 10 }}>
+          <RoutesTab />
+        </View>
         
       default:
         break;
@@ -60,13 +64,15 @@ export default ContractorScreen
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "#F7F8FC"
+      backgroundColor: "#F7F8FC",
+
     },
 
     tabbarWrapper: {
       backgroundColor:"white",
       paddingVertical: 25,
       justifyContent:"center",
+      paddingHorizontal: 0,
      
     },
 
@@ -76,6 +82,5 @@ const styles = StyleSheet.create({
       height:"100%",
       justifyContent:"flex-start",
       alignItems:"flex-start",
-      padding:5
     }
 })

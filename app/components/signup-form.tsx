@@ -89,10 +89,10 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
       <Text style={{textAlign:"center"}} category='s2'>Contractors are required to register.</Text>
       <Formik 
         initialValues={{
-          email: '',
-          password: '',
-          confirmPassword: '',
-          companyName: '',
+          email: 'malik@snow.com',
+          password: 'qwerty',
+          confirmPassword: 'qwerty',
+          companyName: 'Snow Patrol',
         }}
         validationSchema={validationSchema}
         onSubmit={values => register(values)}
