@@ -1,86 +1,84 @@
-import { StyleSheet, View, Dimensions, Pressable, Modal, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, ImageBackground, StatusBar, Animated, Easing} from 'react-native'
+import { Animated, Easing, Modal, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import theme from "../../../theme.json"
+import { LinearGradient } from 'expo-linear-gradient'
 import { Button, Text } from '@ui-kitten/components'
-import theme from "../theme.json"
-import { Link, useRouter } from 'expo-router'
-import SignupForm from '../components/signup-form'
-import SigninForm from '../components/signin-form'
-import { LinearGradient } from 'expo-linear-gradient';
+import DriverForm from './forms/DriverForm'
+import CustomerForm from './forms/CustomerForm'
+import RouteForm from './forms/RouteForm'
+import { Driver } from '@/types/User'
+import { addDoc, collection } from 'firebase/firestore'
+import db from '@/firebase/firebase-config'
 
-// const closeIcon = (props: any): IconElement => (
-//     <Icon
-//       {...props}
-//       name="close-circle"
-//       style={{width: 30, height: 30}}
-//       fill="#EC645B"
-//     />
-//   );
-
-const auth = () => {
-  
-    const {width, height} = Dimensions.get('window')
-    const router = useRouter()
+interface PostModalProps {
+    type: string;
+    visible: boolean;
+    dismiss: () => void;
+    
+}
+const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
     const [modalIsVisible, setModalIsVisible] = useState<boolean>(false)
-    const [modalType, setModalType] = useState("SIGN IN")
-    const [isrewardDay, setIsrewardDay] = useState(false)
+    const [slideAnim] = useState(new Animated.Value(0)); // Initial value for the slide animation
+
     const dismissModal = () => {
-        setModalIsVisible(!modalIsVisible)
+        dismiss()
       };
 
-      const [slideAnim] = useState(new Animated.Value(0)); // Initial value for the animation
+      useEffect(() => {
+            setModalIsVisible(!modalIsVisible)
+      }, [visible])
+      
+      // ADD DRIVER DOC
+      const addDriver = async (driverData: Driver) => {
+          try {
+            const docRef = await addDoc(collection(db, "drivers"), {...driverData});
+            dismiss()
+                  
+          } catch (e) {
+            // console.error("Error adding document: ", e);
+            alert("Something went wrong, please try again or comeback later")
+          }        
+      }
+
+      // POPULATE MODAL CONTENT
+      const populateModalContent = () => {
+        switch (type) {
+          case "Driver":
+            return <DriverForm addDriver={addDriver} />
+          case "Customer":
+            return <CustomerForm />
+          case "Route":
+            return <RouteForm />
+          default:
+            break;
+        }
+      }
+      
 
       useEffect(() => {
-        // Animate the slide-in effect when the component mounts
-        Animated.timing(slideAnim, {
-          toValue: 1,  // Final position (0 = fully hidden, 1 = fully shown)
-          duration: 500, // Duration of the animation
-          easing: Easing.ease, // Easing function for the animation
-          useNativeDriver: true, // Enable native driver for better performance
-        }).start();
-      }, [slideAnim]);
+              // Animate the slide-in effect when the component mounts
+              Animated.timing(slideAnim, {
+                toValue: 1,  // Final position (0 = fully hidden, 1 = fully shown)
+                duration: 500, // Duration of the animation
+                easing: Easing.ease, // Easing function for the animation
+                useNativeDriver: true, // Enable native driver for better performance
+              }).start();
+            }, [slideAnim]);
+      
+            const transform = [{
+                translateY: slideAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-700, 0], // Slide from 300px down to the original position
+                }),
+              },
+            ]
 
-      const transform = [{
-          translateY: slideAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [-700, 0], // Slide from 300px down to the original position
-          }),
-        },
-      ]
+          
+      
+     
 
   return (
-
-     
-    <View style={[styles.container]}>
-      <StatusBar hidden barStyle="light-content" translucent={true} />
-        {/* HERO */}
-      <ImageBackground
-      source={require("../../assets/images/heroImage.jpg")} // Replace with your image URL or local file
-      style={[styles.heroBG, {height: height, paddingTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight,}]}
-      imageStyle={styles.imageStyle}
-    >
-      <Animated.View style={[styles.heroTextContainer, {transform: transform}]}> 
-      <Text category='s1' style={styles.heroText}>Snow Patrol connects customers with local snow blower operators for quick and easy snow removal. Users can request services and track progress in real-time.</Text>
-      </Animated.View>
-    </ImageBackground>
-  
-      <View style={styles.buttonsRow}>
-        <Button onPress={() => {
-            setModalType("SIGN IN")
-            setModalIsVisible(true)
-        }} style={styles.authBtn} appearance='outline'  status='primary'>{evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>SIGN IN</Text>}</Button>
-
-
-          <Button onPress={() => {
-            console.log("show modal");
-            setModalType("SIGN UP")
-            setModalIsVisible(true);
-              }} style={styles.authBtn} appearance='outline'  status='primary'>
-                {evaProps => <Text  {...evaProps} style={{color:"#ffffff"}}>SIGN UP</Text>}</Button>
-      </View>
-
-      
-      
-      
+    <View style={styles.container}>
       <Modal animationType="slide" transparent={true} visible={modalIsVisible}>
       <View style={styles.centeredView}>  
       
@@ -90,33 +88,33 @@ const auth = () => {
         style={styles.background}
       />  
               {/* MODAL TITLE */}
-              <Text category='h4' style={styles.modalTitle}>{modalType}</Text>
+              <Text category='h4' style={styles.modalTitle}>Add {type}</Text>
+              {/* MODAL CONTENT */}
+              {populateModalContent()}
+              
               {/* CLOSE BUTTON */}
               <Button
                   status="danger"            // Optional: Change the button's status to "danger" for a red color
-                  onPress={() => setModalIsVisible(false)}      // Handle the button press
+                  onPress={dismissModal}      // Handle the button press
                   appearance="ghost"  
                   style={styles.closeBtn} 
                 >
                   <Text>X</Text>
               </Button>
-              {/* AUTH FORM */}
-              {modalType === "SIGN UP" ? <SignupForm dismissModal={dismissModal} /> : <SigninForm dismissModal={dismissModal} />}
+              
             </View>
           </View>
     </Modal>
-      
-      
-        
     </View>
   )
 }
 
-export default auth
+export default PostModal
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "transparent"
     },
 
    
@@ -219,14 +217,17 @@ const styles = StyleSheet.create({
       },
       
       textStyle: {
-        color: 'white',
+        // color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
       },
       modalTitle: {
-        marginTop: 60,
+        marginTop: 20,
         marginBottom:0,
-        textAlign: 'center',
+        textAlign: 'right',
+        fontWeight: 900,
+        fontSize: 50,
+        color: "#3B83C3"
       },
 
       closeBtn: {
