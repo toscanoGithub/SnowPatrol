@@ -7,7 +7,6 @@ type AuthUser = {
     companyName: string;
     phoneNumber?: string;
     userType: string;
-
 };
 
 type UserContextType = {
@@ -26,8 +25,15 @@ type UserContextProviderProps = {
 export const UserContextProvider = ({ children }: UserContextProviderProps) => {
     const [user, setUser] = useState<AuthUser | null>(null);
 
+    const value: UserContextType = {
+        email: user?.email,
+        companyName: user?.companyName ?? '',
+        user,
+        setUser
+    };
+
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={value}>
             {children}
         </UserContext.Provider>
     );

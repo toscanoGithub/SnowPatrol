@@ -12,17 +12,6 @@ interface HeaderProps {
 }
 
 
-const signoutIcon = (props:any): IconElement => (
-    <Icon
-      {...props}
-      name="log-out-outline"
-      animation="shake"
-      style={{width: 40, height: 40}}
-      fill={"#CDD511"}
-    />
-  );
-
-
 const Header: React.FC<HeaderProps> = ({ companyName, email }) => {
 
     const auth = getAuth();
@@ -49,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ companyName, email }) => {
       <MaterialIcons
         name="exit-to-app" // icon name for sign-out
         size={40} // size of the icon
-        color="#F7CF00" // icon color
+        color={theme["aa-yellow-color"]} // icon color
         onPress={logout} // calling the sign-out function when pressed
       />
       

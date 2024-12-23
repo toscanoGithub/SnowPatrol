@@ -6,20 +6,33 @@ import { useUserContext } from '@/contexts/UserContext'
 import Header from '../components/header'
 import { IconAnimationRegistry } from '@ui-kitten/components/ui/icon/iconAnimation'
 import theme from "../theme.json"
-import CustomersTab from '../components/contractor/customers-tab'
-import DriversTab from '../components/contractor/drivers-tab'
-import RoutesTab from '../components/contractor/routes-tab'
+import CustomersTab from '../components/contractor/tabs/customers-tab'
+import DriversTab from '../components/contractor/tabs/drivers-tab'
+import RoutesTab from '../components/contractor/tabs/routes-tab'
+import fetchDrivers from '../api-requests/firebase-services'
+import { Driver } from '@/types/User'
 
 
 const ContractorScreen = () => {
   const [selectedIndex, setSelectedIndex] = useState(0)
-
+  const {user} = useUserContext()
+  const [drivers, setDrivers] = useState<Driver[]>([])
+  
+  const asyncFetch = async () => {
+    if(user) {
+      const d =  await fetchDrivers(user.companyName)
+      setDrivers(d)
+    }
+  }
+  useEffect(() => {
+      asyncFetch()
+  }, [])
   
   const layoutMainSection = () => {
     switch (selectedIndex) {
       case 0:
         return <View style={{width:"100%", flex:1, marginTop: 10 }}>
-        <DriversTab />
+        <DriversTab drivers={drivers}  />
         
       </View>
       case 1:
@@ -80,7 +93,6 @@ const styles = StyleSheet.create({
 
     main: {
       height:"100%",
-      justifyContent:"flex-start",
-      alignItems:"flex-start",
+      
     }
 })

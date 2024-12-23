@@ -1,22 +1,20 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { Button, Icon, IconElement } from '@ui-kitten/components'
 import { MaterialIcons } from '@expo/vector-icons';
-import theme from "../theme.json"
+import theme from "../../../theme.json"
 
 interface ActionButtonProps {
-    onPress: () => void;
+    onPress: (type: string) => void;
     iconName: string;
-    label?: string; // Optional prop for the label text
+    type: string; // Optional prop for the label text
   }
 
-const ActionSheetAddButton: React.FC<ActionButtonProps> = ({ onPress, iconName, label }) => {
+const ActionSheetAddButton: React.FC<ActionButtonProps> = ({ onPress, iconName, type }) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
+    <TouchableOpacity style={styles.button} onPress={() => onPress(type)}>
       <View style={styles.iconWrapper}>
         <MaterialIcons name={iconName as any} size={30} color="white" />
       </View>
-      {label && <Text style={styles.label}>{label}</Text>}
     </TouchableOpacity>
   )
 }
@@ -27,7 +25,7 @@ const styles = StyleSheet.create({
     button: {
         position: 'absolute',
         right: 20,
-        bottom: 20,
+        bottom: "10%",
         backgroundColor: theme["color-primary-500"], // Tomato color
         width: 60,
         height: 60,
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
-      label: {
+      type: {
         position: 'absolute',
         top: 65,
         fontSize: 12,
