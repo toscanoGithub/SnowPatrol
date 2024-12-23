@@ -9,6 +9,7 @@ import RouteForm from './forms/RouteForm'
 import { Driver } from '@/types/User'
 import { addDoc, collection } from 'firebase/firestore'
 import db from '@/firebase/firebase-config'
+import { useDriverContext } from '@/contexts/DriverContext'
 
 interface PostModalProps {
     type: string;
@@ -20,6 +21,9 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
     const [modalIsVisible, setModalIsVisible] = useState<boolean>(false)
     const [slideAnim] = useState(new Animated.Value(0)); // Initial value for the slide animation
 
+    // CONTEXT API
+    const {addDriverToContext} = useDriverContext()
+
     const dismissModal = () => {
         dismiss()
       };
@@ -30,14 +34,8 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
       
       // ADD DRIVER DOC
       const addDriver = async (driverData: Driver) => {
-          try {
-            const docRef = await addDoc(collection(db, "drivers"), {...driverData});
-            dismiss()
-                  
-          } catch (e) {
-            // console.error("Error adding document: ", e);
-            alert("Something went wrong, please try again or comeback later")
-          }        
+        await addDriverToContext({...driverData})
+        dismiss()
       }
 
       // POPULATE MODAL CONTENT
