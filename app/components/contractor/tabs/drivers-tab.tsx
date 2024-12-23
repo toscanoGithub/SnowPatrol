@@ -7,13 +7,16 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import ActionSheetAddButton from '../components/action-sheet-add-button'
 import PostModal from '../components/post-modal'
+import { useDriverContext } from '@/contexts/DriverContext'
 
-interface DriversTabProps {
-    drivers: Driver[];  // Define the drivers prop type
-  }
+// interface DriversTabProps {
+//     drivers: Driver[];  // Define the drivers prop type
+//   }
 
-  const DriversTab: React.FC<DriversTabProps> = ({ drivers }) => {
+  const DriversTab = () => {
     const [modalIsVisible, setModalIsVisible] = useState(false)
+    const {drivers} = useDriverContext()
+
     const addButtonPressed = (type: string): void => {
       setModalIsVisible(true)
     };
@@ -42,7 +45,7 @@ interface DriversTabProps {
             <Text>{item.fullName}</Text> 
             <Text>{item.email}</Text> 
             <Text>{item.phoneNumber}</Text> 
-            <Text>Matricule: {item.idNumber}</Text> 
+            <Text>Registration ID: {item.idNumber}</Text> 
             <View style={styles.actions}>
             <TouchableOpacity style={styles.button} onPress={deletePressed}>
                 <View style={styles.iconWrapper}>
@@ -69,7 +72,7 @@ interface DriversTabProps {
         />
 
         {
-            drivers.length > 0 ? (<View style={{flex: 0.8, backgroundColor:"red"}}><FlatList data={drivers} renderItem={renderDriverItem} keyExtractor={(item) => item.idNumber}
+            drivers.length > 0 ? (<View style={{flex: 0.8,}}><FlatList data={drivers} renderItem={renderDriverItem} keyExtractor={(item) => item.idNumber}
             /></View>) : <View><Text>No driver yet</Text></View>
         }
 

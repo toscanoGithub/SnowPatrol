@@ -7,6 +7,7 @@ export interface User {
 }
 
 export interface Driver {
+    id?: string;
     fullName: string;
     email: string;
     idNumber: string;

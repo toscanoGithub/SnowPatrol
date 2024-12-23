@@ -12,12 +12,13 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry, Text } from '@ui-kitten/components';
-import { UserContextProvider, useUserContext } from '@/contexts/UserContext';
+import { useUserContext } from '@/contexts/UserContext';
 
 import { getAuth, signOut } from 'firebase/auth';
 import { User } from '@/types/User';
 import { View } from 'react-native';
 import Header from './components/header';
+import CombinedContextProvider from '@/contexts/CombinedContextProvider';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -46,8 +47,7 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
-    <UserContextProvider>
+  return (<CombinedContextProvider>
       <ApplicationProvider {...eva} theme={eva.light}>
           <IconRegistry icons={EvaIconsPack}/>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -66,7 +66,7 @@ export default function RootLayout() {
               <StatusBar style="auto" />
           </ThemeProvider>
           
-      </ApplicationProvider>
-      </UserContextProvider>
+          </ApplicationProvider>
+        </CombinedContextProvider>
   );
 }
