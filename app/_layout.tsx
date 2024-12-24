@@ -14,9 +14,7 @@ import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry, Text } from '@ui-kitten/components';
 import { useUserContext } from '@/contexts/UserContext';
 
-import { getAuth, signOut } from 'firebase/auth';
-import { User } from '@/types/User';
-import { View } from 'react-native';
+import { getAuth } from 'firebase/auth';
 import Header from './components/header';
 import CombinedContextProvider from '@/contexts/CombinedContextProvider';
 

@@ -60,15 +60,14 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
       }
  }
 
- const addMoreDataToUser = async (email: string, companyName: string, userType="Contractor") => {
+ const addMoreDataToUser = async (email: string, companyName: string) => {
   try {
       const docRef = await addDoc(collection(db, "users"), {
         email,
         companyName,
-        userType
       });
 
-      setUser({id: docRef.id, email: email, companyName: companyName, userType: "Contractor"})  
+      setUser({id: docRef.id, email: email, companyName: companyName})  
       
       dismissModal()
       router.push("/(screens)/contractor-screen")    

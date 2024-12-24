@@ -24,20 +24,17 @@ interface DriverContextType {
 // Create a context with default values
 const DriverContext = createContext<DriverContextType | undefined>(undefined);
 
-
-
 // Create a Provider component
 export const DriverContextProvider = ({ children }: { children: ReactNode }) => {
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const {user} = useUserContext()
     const fetchedDrivers: Driver[] = []
 
-    const fetchDrivers = async () => {
-    
+    const fetchDrivers = async () => {    
     const q = query(collection(db, "drivers"), where("companyName", "==", user?.companyName));
     const querySnapshot = await getDocs(q);
     if(querySnapshot.empty) {
-      alert("no driver registered in the ")
+      console.log("no driver registered in the ")
     } else {
       querySnapshot.forEach((doc) => {
        const driver: Driver = {
@@ -59,7 +56,7 @@ export const DriverContextProvider = ({ children }: { children: ReactNode }) => 
 
     useEffect(() => {
         fetchDrivers();
-       }, [])
+       }, [user])
 
        
 
