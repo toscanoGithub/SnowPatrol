@@ -40,7 +40,7 @@ const SigninForm: React.FC<signinProp> = ({ dismissModal }) => {
       case "Contractor":
         return <ContractorForm dismissModal={dismissModal} />
       case "Driver":
-        return <DriverForm />
+        return <DriverForm dismissModal={dismissModal} />
     
       default:
         break;

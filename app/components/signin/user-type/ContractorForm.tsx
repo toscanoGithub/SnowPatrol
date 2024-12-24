@@ -18,7 +18,7 @@ interface FormValues {
     password: string;
   };
 
-  interface contractorFormProps {
+  interface ContractorFormProps {
     dismissModal: () => void;
   }
 
@@ -27,17 +27,10 @@ interface FormValues {
     password: Yup.string().required('Password is required'),
   });
 
-const ContractorForm: React.FC<contractorFormProps> = ({dismissModal}) => {
+const ContractorForm: React.FC<ContractorFormProps> = ({dismissModal}) => {
     const {setUser} = useUserContext()
     const auth = getAuth();
     const router = useRouter();
-
-    const handleGenerateId = (setFieldValue: FormikHelpers<FormValues>['setFieldValue']) => {
-        // Assuming you generate the idNumber here
-        const generatedId = Math.floor(1000 + Math.random() * 9000); // Replace with your actual logic
-        setFieldValue("idNumber", generatedId.toString()); // Update the Formik field
-      };
-
 
   return (
     <View style={styles.container}>
