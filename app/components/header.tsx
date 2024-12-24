@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Image, StyleSheet, ImageSourcePropType, TouchableOpacity } from 'react-native';
 import theme from "../theme.json"
-import { Button, Icon, IconElement, Text } from '@ui-kitten/components';
+import {Text } from '@ui-kitten/components';
 import { getAuth, signOut } from 'firebase/auth';
 import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useUserContext } from '@/contexts/UserContext';
 
 interface HeaderProps {
   companyName?: string;
@@ -15,7 +16,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ companyName, email }) => {
 
     const auth = getAuth();
-
+    const {setUser} = useUserContext()
     const logout = () => {
         signOut(auth).then(() => {
           // Sign-out successful.

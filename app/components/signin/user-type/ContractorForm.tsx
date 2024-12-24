@@ -1,35 +1,36 @@
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import { Button, Input, Text } from '@ui-kitten/components'
-import { Driver } from '@/types/User';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { useUserContext } from '@/contexts/UserContext';
-import theme from "../../../../theme.json";
+import theme from "../../../theme.json";
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { useRouter } from 'expo-router';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import db from '@/firebase/firebase-config';
+import { User } from '@/types/User';
 
-interface DriverFormProps {
-    addDriver: (driverData: Driver) => void;
-}
+
 
 interface FormValues {
-    fullName: string;
     email: string;
-    idNumber: string;
-    companyName: string;
-    phoneNumber: string;
+    password: string;
   };
 
+  interface contractorFormProps {
+    dismissModal: () => void;
+  }
+
   const validationSchema = Yup.object().shape({
-    fullName: Yup.string().required("Full name is required"),
     email: Yup.string().email("Not a valid email").required('Email is required'),
-    idNumber: Yup.string().required("Id number is required"),
-    phoneNumber: Yup.string().required("Phone number is required"),
+    password: Yup.string().required('Password is required'),
   });
 
-const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
-    const {user} = useUserContext()
-    const [generatedIdnumber, setGeneratedIdnumber] = useState("")
-
+const ContractorForm: React.FC<contractorFormProps> = ({dismissModal}) => {
+    const {setUser} = useUserContext()
+    const auth = getAuth();
+    const router = useRouter();
 
     const handleGenerateId = (setFieldValue: FormikHelpers<FormValues>['setFieldValue']) => {
         // Assuming you generate the idNumber here
@@ -43,37 +44,55 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
       <KeyboardAvoidingView style={{ flex: 1 }}behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <Formik 
                     initialValues={{
-                        fullName: "",
-                        email: "",
-                        idNumber: "",
-                        companyName: "",
-                        phoneNumber: ""
+                        email: "malik@snow.com",
+                        password: "qwerty",
                     }}
                     validationSchema={validationSchema}
                     
                     onSubmit={values => {
-                        const newDriver: Driver = {...values, companyName: user!.companyName}
-                        addDriver(newDriver)
+                      // Sign in logic
+                      const {email, password} = values;
+                      signInWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+          // SUCCESS
+            // GET MORE CREDENTIALS FROM FIRESTORE
+          const q = query(collection(db, "users"), where("email", "==", userCredential.user.email));
+          const querySnapshot = await getDocs(q);
+
+          if(querySnapshot.empty) {
+            alert("Something went wrong, please try later")
+          } else {
+            const foundUsers: User[] = []
+            querySnapshot.forEach((doc) => {
+              // console.log(doc.id, doc.data());
+              foundUsers.push({id: doc.id, ...doc.data()} as User) 
+              
+              
+              //router.push({pathname: "/(screens)/contractor-screen", params: {...doc.data()}})
+              
+           });
+           const foundUser = foundUsers.pop() as User;
+           setUser(foundUser)
+           dismissModal();
+           router.push("/(screens)/contractor-screen")
+           
+          }
+
+          
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorMessage);
+          alert("Un ou plusieurs des identifiants ne sont pas valides.")
+        });
                         
                     }}
-                    
                     >
             
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue, resetForm }) => 
             
             <View style={styles.inputsWrapper}>
-                    {/* FULL NAME */}
-                    <Input
-                        style={styles.input}
-                        placeholder='Full name'
-                        value={values.fullName}
-                        onChangeText={handleChange('fullName')}
-                        onBlur={handleBlur('fullName')}
-                        status={touched.fullName && errors.fullName ? 'danger' : 'basic'}
-                    />
-                    {touched.fullName && errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
-            
-
                     {/* EMAIL */}
                     <Input
                         style={styles.input}
@@ -85,42 +104,24 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
                     />
                     {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-                {/* ID NUMBER */}
-               <View style={styles.rowId}>
-                <Input
-                        style={[styles.input, {maxWidth: "50%",}]}
-                        placeholder='idNumber'
-                        value={values.idNumber}
-                        onChangeText={handleChange('idNumber')}
-                        onBlur={handleBlur('idNumber')}
-                        status={touched.idNumber && errors.idNumber ? 'danger' : 'basic'}
+                            
+                    {/* PASSWORD */}
+                    <Input
+                      style={styles.input}
+                      placeholder='Password'
+                      value={values.password}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                      status={touched.password && errors.password ? 'danger' : 'basic'}
                     />
-
-                    <Button onPress={() => handleGenerateId(setFieldValue)} style={styles.gnerateBtn}>
-                    {evaProps => <Text style={{color:"#000000", ...evaProps}}>Generate id number</Text>}
-                    </Button>
-               </View>
-               {touched.idNumber && errors.idNumber && <Text style={styles.errorText}>{errors.idNumber}</Text>}
-
-            
-                {/* PHONE NUMBER */}
-                <Input
-                    style={styles.input}
-                    placeholder='Phone number'
-                    value={values.phoneNumber}
-                    onChangeText={handleChange('phoneNumber')}
-                    onBlur={handleBlur('phoneNumber')}
-                    status={touched.phoneNumber && errors.phoneNumber ? 'danger' : 'basic'}
-                />
-                {touched.phoneNumber && errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
-
+                    {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
             
                 <Button onPress={() => {
                     handleSubmit()
                     // resetForm()
                     
                 }} style={styles.submitBtn} status="primary">
-                    Add driver
+                    Sign in
                 </Button>
 
             </View>
@@ -133,13 +134,12 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
   )
 }
 
-export default DriverForm
+export default ContractorForm
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: "100%",
-        paddingVertical: 10,
     },
 
     inputsWrapper: {
@@ -150,14 +150,16 @@ const styles = StyleSheet.create({
     
       input: {
         width:"100%",
-        paddingVertical: 15,
+        marginTop: 8,
+        marginBottom: 10,
+        paddingTop:0,
         backgroundColor:"#cccccc"
+
       },
     
       errorText: {
         color: 'red',
-        marginTop: -10,
-        marginBottom: 10,
+        marginTop: -8,
       },
     
       submitBtn: {

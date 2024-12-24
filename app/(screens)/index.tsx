@@ -4,7 +4,7 @@ import { Button, Text } from '@ui-kitten/components'
 import theme from "../theme.json"
 import { Link, useRouter } from 'expo-router'
 import SignupForm from '../components/signup-form'
-import SigninForm from '../components/signin-form'
+import SigninForm from '../components/signin/signin-form'
 import { LinearGradient } from 'expo-linear-gradient';
 
 // const closeIcon = (props: any): IconElement => (
@@ -224,9 +224,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
       },
       modalTitle: {
-        marginTop: 60,
-        marginBottom:0,
+        marginTop: 20,
+        marginBottom: 20,
         textAlign: 'center',
+        fontSize: 50,
+        color: "#3B83C3",
       },
 
       closeBtn: {
