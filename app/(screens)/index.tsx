@@ -6,6 +6,7 @@ import { Link, useRouter } from 'expo-router'
 import SignupForm from '../components/signup-form'
 import SigninForm from '../components/signin/signin-form'
 import { LinearGradient } from 'expo-linear-gradient';
+import { useUserContext } from '@/contexts/UserContext'
 
 // const closeIcon = (props: any): IconElement => (
 //     <Icon
@@ -18,6 +19,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const auth = () => {
   
+    const {user} = useUserContext()
+
     const {width, height} = Dimensions.get('window')
     const router = useRouter()
     const [modalIsVisible, setModalIsVisible] = useState<boolean>(false)
@@ -46,6 +49,12 @@ const auth = () => {
           }),
         },
       ]
+
+      useEffect(() => {
+        console.log("------------- ", user?.companyName);
+        
+      }, [user])
+      
 
   return (
 

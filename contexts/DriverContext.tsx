@@ -31,10 +31,10 @@ export const DriverContextProvider = ({ children }: { children: ReactNode }) => 
     const fetchedDrivers: Driver[] = []
 
     const fetchDrivers = async () => {    
-    const q = query(collection(db, "drivers"), where("companyName", "==", user?.companyName));
+    const q = query(collection(db, "drivers"), where("companyName", "==", user!.companyName));
     const querySnapshot = await getDocs(q);
     if(querySnapshot.empty) {
-      console.log("no driver registered in the ")
+      console.log("no Customer registered yet")
     } else {
       querySnapshot.forEach((doc) => {
        const driver: Driver = {

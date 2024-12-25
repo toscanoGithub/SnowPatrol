@@ -28,8 +28,6 @@ interface FormValues {
 
 const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
     const {user} = useUserContext()
-    const [generatedIdnumber, setGeneratedIdnumber] = useState("")
-
 
     const handleGenerateId = (setFieldValue: FormikHelpers<FormValues>['setFieldValue']) => {
         // Assuming you generate the idNumber here

@@ -6,9 +6,8 @@ import { Button, Text } from '@ui-kitten/components'
 import DriverForm from './forms/DriverForm'
 import CustomerForm from './forms/CustomerForm'
 import RouteForm from './forms/RouteForm'
-import { Driver } from '@/types/User'
-import { addDoc, collection } from 'firebase/firestore'
-import db from '@/firebase/firebase-config'
+import { Customer, Driver } from '@/types/User'
+import { useCustomerrContext } from '@/contexts/CustomerContext'
 import { useDriverContext } from '@/contexts/DriverContext'
 
 interface PostModalProps {
@@ -23,6 +22,7 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
 
     // CONTEXT API
     const {addDriverToContext} = useDriverContext()
+    const {addCustomerToContext} = useCustomerrContext()
 
     const dismissModal = () => {
         dismiss()
@@ -32,9 +32,15 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
             setModalIsVisible(!modalIsVisible)
       }, [visible])
       
-      // ADD DRIVER DOC
+      // ADD DRIVER 
       const addDriver = async (driverData: Driver) => {
         await addDriverToContext({...driverData})
+        dismiss()
+      }
+
+      // ADD CUSTOMER 
+      const addCustomer = async (customerData: Customer) => {
+        await addCustomerToContext({...customerData})
         dismiss()
       }
 
@@ -44,7 +50,7 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
           case "Driver":
             return <DriverForm addDriver={addDriver} />
           case "Customer":
-            return <CustomerForm />
+            return <CustomerForm addCustomer={addCustomer} />
           case "Route":
             return <RouteForm />
           default:
