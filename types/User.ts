@@ -13,3 +13,12 @@ export interface Driver {
     companyName: string;
     phoneNumber: string;
 }
+
+export interface Customer {
+    id?: string;
+    fullName: string;
+    email: string;
+    address: string;
+    phoneNumber: string;
+    companyName: string;
+}

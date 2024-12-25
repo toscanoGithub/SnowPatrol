@@ -20,6 +20,7 @@ const Header: React.FC<HeaderProps> = ({ companyName, email }) => {
     const logout = () => {
         signOut(auth).then(() => {
           // Sign-out successful.
+          setUser(null); // clear user
           router.push("/");
     
         }).catch((error) => {
