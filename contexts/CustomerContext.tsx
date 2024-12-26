@@ -36,9 +36,10 @@ export const CustomerContextProvider = ({ children }: { children: ReactNode }) =
         id: doc.id,
         fullName: doc.data().fullName,
         email: doc.data().email,
-        address: doc.data().address,
         companyName: doc.data().companyName,
-        phoneNumber: doc.data().phoneNumber
+        phoneNumber: doc.data().phoneNumber,
+        address: doc.data().address,
+        placeID: doc.data().place_id
     }
         fetchedCustomers.push(customer)
         
@@ -56,6 +57,8 @@ export const CustomerContextProvider = ({ children }: { children: ReactNode }) =
        
 
     const addCustomerToContext = async (customer: Customer) => {
+        console.log("Adding custoeer to context");
+        
         try {
             const docRef = await addDoc(collection(db, "customers"), {...customer});
             fetchCustomers()
