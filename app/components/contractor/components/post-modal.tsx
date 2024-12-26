@@ -1,4 +1,4 @@
-import { Animated, Easing, Modal, StyleSheet, View } from 'react-native'
+import { Animated, Easing, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import theme from "../../../theme.json"
 import { LinearGradient } from 'expo-linear-gradient'
@@ -19,10 +19,18 @@ interface PostModalProps {
 const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
     const [modalIsVisible, setModalIsVisible] = useState<boolean>(false)
     const [slideAnim] = useState(new Animated.Value(0)); // Initial value for the slide animation
+    const [modalViewHeight, setModalViewHeight] = useState(80)
 
     // CONTEXT API
     const {addDriverToContext} = useDriverContext()
     const {addCustomerToContext} = useCustomerrContext()
+
+    const listenToFormFocusEvent = () => {
+      if(modalViewHeight === 80) {
+        setModalViewHeight(100)
+      }
+    }
+
 
     const dismissModal = () => {
         dismiss()
@@ -50,7 +58,7 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
           case "Driver":
             return <DriverForm addDriver={addDriver} />
           case "Customer":
-            return <CustomerForm addCustomer={addCustomer} />
+            return <CustomerForm formHasFocus={listenToFormFocusEvent} addCustomer={addCustomer} />
           case "Route":
             return <RouteForm />
           default:
@@ -69,47 +77,53 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
               }).start();
             }, [slideAnim]);
       
-            const transform = [{
-                translateY: slideAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-700, 0], // Slide from 300px down to the original position
-                }),
-              },
-            ]
+           
 
           
       
+            // useEffect(() => {
+            //   if(formHasFocus === true) {
+            //     setModalViewHeight(150);
+            //   } else {
+            //     setModalViewHeight(80)
+            //   }
+            // }, [formHasFocus])
+            
      
 
   return (
-    <View style={styles.container}>
-      <Modal animationType="slide" transparent={true} visible={modalIsVisible}>
-      <View style={styles.centeredView}>  
-      
-            <View style={styles.modalView}>
-            <LinearGradient
-        colors={["#0266B1", "#0266B190"]}
-        style={styles.background}
-      />  
+    
+      <View style={styles.container}>
+        <Modal animationType="slide" transparent={true} visible={modalIsVisible}>
+          <View style={styles.centeredView}>
+            <View style={[styles.modalView, {height: `${modalViewHeight}%`}]}>
+              <LinearGradient
+                colors={['#0266B1', '#0266B190']}
+                style={styles.background}
+              />
+
               {/* MODAL TITLE */}
-              <Text category='h4' style={styles.modalTitle}>Add {type}</Text>
+              <Text category="h4" style={styles.modalTitle}>
+                Add {type}
+              </Text>
+
               {/* MODAL CONTENT */}
               {populateModalContent()}
-              
+
               {/* CLOSE BUTTON */}
               <Button
-                  status="danger"            // Optional: Change the button's status to "danger" for a red color
-                  onPress={dismissModal}      // Handle the button press
-                  appearance="ghost"  
-                  style={styles.closeBtn} 
-                >
-                  <Text>X</Text>
+                status="danger" // Optional: Change the button's status to "danger" for a red color
+                onPress={dismissModal} // Handle the button press
+                appearance="ghost"
+                style={styles.closeBtn}
+              >
+                <Text>X</Text>
               </Button>
-              
             </View>
           </View>
-    </Modal>
-    </View>
+        </Modal>
+      </View>
+   
   )
 }
 
@@ -210,7 +224,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-        height:"80%",
+        // height:"80%",
         width:"100%",
         
       },
@@ -230,7 +244,7 @@ const styles = StyleSheet.create({
         marginBottom:0,
         textAlign: 'right',
         fontWeight: 900,
-        fontSize: 50,
+        fontSize: 40,
         color: "#3B83C3"
       },
 
@@ -277,3 +291,9 @@ const styles = StyleSheet.create({
     
       },
 })
+
+
+
+
+
+                // <View style={{flex:1,   backgroundColor:"transparent", position: "absolute", top: 190, width: "100%",paddingBottom: 40, zIndex: 1000}}>

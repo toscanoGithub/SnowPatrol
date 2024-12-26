@@ -18,7 +18,8 @@ export interface Customer {
     id?: string;
     fullName: string;
     email: string;
-    address: string;
     phoneNumber: string;
     companyName: string;
+    address: string;
+    placeID: string;
 }

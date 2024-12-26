@@ -1,9 +1,10 @@
 import { StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Divider, Radio, RadioGroup, Text } from '@ui-kitten/components';
-import CustomerForm from '../contractor/components/forms/CustomerForm';
+import CustomerForm from "./user-type/CustomerForm";
 import ContractorForm from './user-type/ContractorForm';
 import DriverForm from './user-type/DriverForm';
+import { Customer } from '@/types/User';
 
 
 interface signinProp {
