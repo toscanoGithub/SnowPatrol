@@ -20,6 +20,7 @@ interface FormValues {
 
   interface ContractorFormProps {
     dismissModal: () => void;
+    formHasFocus: () => void;
   }
 
   const validationSchema = Yup.object().shape({
@@ -27,7 +28,7 @@ interface FormValues {
     password: Yup.string().required('Password is required'),
   });
 
-const ContractorForm: React.FC<ContractorFormProps> = ({dismissModal}) => {
+const ContractorForm: React.FC<ContractorFormProps> = ({dismissModal, formHasFocus}) => {
     const {setUser} = useUserContext()
     const auth = getAuth();
     const router = useRouter();
@@ -93,6 +94,7 @@ const ContractorForm: React.FC<ContractorFormProps> = ({dismissModal}) => {
                         value={values.email}
                         onChangeText={handleChange('email')}
                         onBlur={handleBlur('email')}
+                        onFocus={formHasFocus}
                         status={touched.email && errors.email ? 'danger' : 'basic'}
                     />
                     {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
@@ -105,6 +107,8 @@ const ContractorForm: React.FC<ContractorFormProps> = ({dismissModal}) => {
                       value={values.password}
                       onChangeText={handleChange('password')}
                       onBlur={handleBlur('password')}
+                      onFocus={formHasFocus}
+
                       status={touched.password && errors.password ? 'danger' : 'basic'}
                     />
                     {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}

@@ -1,4 +1,4 @@
-import { Animated, Easing, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, View } from 'react-native'
+import {Animated, Easing, Modal, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import theme from "../../../theme.json"
 import { LinearGradient } from 'expo-linear-gradient'
@@ -20,6 +20,8 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
     const [modalIsVisible, setModalIsVisible] = useState<boolean>(false)
     const [slideAnim] = useState(new Animated.Value(0)); // Initial value for the slide animation
     const [modalViewHeight, setModalViewHeight] = useState(80)
+    
+
 
     // CONTEXT API
     const {addDriverToContext} = useDriverContext()
@@ -56,7 +58,7 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
       const populateModalContent = () => {
         switch (type) {
           case "Driver":
-            return <DriverForm addDriver={addDriver} />
+            return <DriverForm formHasFocus={listenToFormFocusEvent} addDriver={addDriver} />
           case "Customer":
             return <CustomerForm formHasFocus={listenToFormFocusEvent} addCustomer={addCustomer} />
           case "Route":
@@ -68,35 +70,23 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
       
 
       useEffect(() => {
-              // Animate the slide-in effect when the component mounts
-              Animated.timing(slideAnim, {
-                toValue: 1,  // Final position (0 = fully hidden, 1 = fully shown)
-                duration: 500, // Duration of the animation
-                easing: Easing.ease, // Easing function for the animation
-                useNativeDriver: true, // Enable native driver for better performance
-              }).start();
-            }, [slideAnim]);
-      
-           
+          // Animate the slide-in effect when the component mounts
+          Animated.timing(slideAnim, {
+            toValue: 1,  // Final position (0 = fully hidden, 1 = fully shown)
+            duration: 500, // Duration of the animation
+            easing: Easing.ease, // Easing function for the animation
+            useNativeDriver: true, // Enable native driver for better performance
+          }).start();
+        }, [slideAnim]);
 
-          
       
-            // useEffect(() => {
-            //   if(formHasFocus === true) {
-            //     setModalViewHeight(150);
-            //   } else {
-            //     setModalViewHeight(80)
-            //   }
-            // }, [formHasFocus])
-            
-     
 
-  return (
     
+  return (
       <View style={styles.container}>
         <Modal animationType="slide" transparent={true} visible={modalIsVisible}>
           <View style={styles.centeredView}>
-            <View style={[styles.modalView, {height: `${modalViewHeight}%`}]}>
+            <View  style={[styles.modalView, {height: `${modalViewHeight}%`}]}>
               <LinearGradient
                 colors={['#0266B1', '#0266B190']}
                 style={styles.background}
@@ -241,8 +231,6 @@ const styles = StyleSheet.create({
       },
       modalTitle: {
         marginTop: 20,
-        marginBottom:0,
-        textAlign: 'right',
         fontWeight: 900,
         fontSize: 40,
         color: "#3B83C3"

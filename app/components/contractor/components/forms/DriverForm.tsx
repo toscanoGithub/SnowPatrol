@@ -9,6 +9,7 @@ import theme from "../../../../theme.json";
 
 interface DriverFormProps {
     addDriver: (driverData: Driver) => void;
+    formHasFocus: () => void;
 }
 
 interface FormValues {
@@ -26,7 +27,7 @@ interface FormValues {
     phoneNumber: Yup.string().required("Phone number is required"),
   });
 
-const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
+const DriverForm: React.FC<DriverFormProps> = ({ addDriver, formHasFocus }) => {
     const {user} = useUserContext()
 
     const handleGenerateId = (setFieldValue: FormikHelpers<FormValues>['setFieldValue']) => {
@@ -67,6 +68,7 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
                         value={values.fullName}
                         onChangeText={handleChange('fullName')}
                         onBlur={handleBlur('fullName')}
+                        onFocus={formHasFocus}
                         status={touched.fullName && errors.fullName ? 'danger' : 'basic'}
                     />
                     {touched.fullName && errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
@@ -79,6 +81,7 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
                         value={values.email}
                         onChangeText={handleChange('email')}
                         onBlur={handleBlur('email')}
+                        onFocus={formHasFocus}
                         status={touched.email && errors.email ? 'danger' : 'basic'}
                     />
                     {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
@@ -87,15 +90,16 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
                <View style={styles.rowId}>
                 <Input
                         style={[styles.input, {maxWidth: "50%",}]}
-                        placeholder='idNumber'
+                        placeholder='ID number'
                         value={values.idNumber}
                         onChangeText={handleChange('idNumber')}
                         onBlur={handleBlur('idNumber')}
+                        onFocus={formHasFocus}
                         status={touched.idNumber && errors.idNumber ? 'danger' : 'basic'}
                     />
 
                     <Button onPress={() => handleGenerateId(setFieldValue)} style={styles.gnerateBtn}>
-                    {evaProps => <Text style={{color:"#000000", ...evaProps}}>Generate id number</Text>}
+                    {evaProps => <Text style={{color:"#000000", fontSize: 14, ...evaProps}}>Generate id number</Text>}
                     </Button>
                </View>
                {touched.idNumber && errors.idNumber && <Text style={styles.errorText}>{errors.idNumber}</Text>}
@@ -108,6 +112,7 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver }) => {
                     value={values.phoneNumber}
                     onChangeText={handleChange('phoneNumber')}
                     onBlur={handleBlur('phoneNumber')}
+                    onFocus={formHasFocus}
                     status={touched.phoneNumber && errors.phoneNumber ? 'danger' : 'basic'}
                 />
                 {touched.phoneNumber && errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}

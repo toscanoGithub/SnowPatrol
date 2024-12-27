@@ -20,6 +20,7 @@ interface FormValues {
 
   interface DriverFormProps {
     dismissModal: () => void;
+    formHasFocus: () => void;
   }
 
   const validationSchema = Yup.object().shape({
@@ -27,7 +28,7 @@ interface FormValues {
     companyName: Yup.string().required('company name is required'),
   });
 
-const DriverForm: React.FC<DriverFormProps> = ({dismissModal}) => {
+const DriverForm: React.FC<DriverFormProps> = ({dismissModal, formHasFocus}) => {
     const {setUser} = useUserContext()
     const auth = getAuth();
     const router = useRouter();
@@ -73,6 +74,7 @@ const DriverForm: React.FC<DriverFormProps> = ({dismissModal}) => {
                         value={values.idNumber}
                         onChangeText={handleChange('idNumber')}
                         onBlur={handleBlur('idNumber')}
+                        onFocus={formHasFocus}
                         status={touched.idNumber && errors.idNumber ? 'danger' : 'basic'}
                     />
                     {touched.idNumber && errors.idNumber && <Text style={styles.errorText}>{errors.idNumber}</Text>}
@@ -85,6 +87,7 @@ const DriverForm: React.FC<DriverFormProps> = ({dismissModal}) => {
                       value={values.companyName}
                       onChangeText={handleChange('companyName')}
                       onBlur={handleBlur('companyName')}
+                      onFocus={formHasFocus}
                       status={touched.companyName && errors.companyName ? 'danger' : 'basic'}
                     />
                     {touched.companyName && errors.companyName && <Text style={styles.errorText}>{errors.companyName}</Text>}
