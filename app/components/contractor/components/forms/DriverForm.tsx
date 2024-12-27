@@ -1,5 +1,5 @@
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import { Button, Input, Text } from '@ui-kitten/components'
 import { Driver } from '@/types/User';
 import { Formik, FormikHelpers } from 'formik';
@@ -39,7 +39,6 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver, formHasFocus }) => {
 
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView style={{ flex: 1 }}behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <Formik 
                     initialValues={{
                         fullName: "",
@@ -131,7 +130,6 @@ const DriverForm: React.FC<DriverFormProps> = ({ addDriver, formHasFocus }) => {
             }
             
                     </Formik>
-          </KeyboardAvoidingView>
     </View>
   )
 }

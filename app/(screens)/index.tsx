@@ -108,17 +108,26 @@ const auth = () => {
       />  
               {/* MODAL TITLE */}
               <Text category='h4' style={styles.modalTitle}>{modalType}</Text>
-              {/* CLOSE BUTTON */}
-              <Button
-                  status="danger"            // Optional: Change the button's status to "danger" for a red color
-                  onPress={() => setModalIsVisible(false)}      // Handle the button press
-                  appearance="ghost"  
-                  style={styles.closeBtn} 
-                >
-                  <Text>X</Text>
-              </Button>
+              
+               {/* CLOSE BUTTON */}
+                            <Button
+                              status="danger" // Optional: Change the button's status to "danger" for a red color
+                              onPress={dismissModal} // Handle the button press
+                              style={styles.closeBtn}
+                            >
+                              {evaProps => <Text style={{color:"red", fontSize: 20, ...evaProps}} >X</Text>}
+                              
+                            </Button>
+                            
+
               {/* AUTH FORM */}
               {modalType === "SIGN UP" ? <SignupForm iHaveFocus={iHaveFocus} dismissModal={dismissModal} /> : <SigninForm  iHaveFocus={iHaveFocus} dismissModal={dismissModal} />}
+           
+           
+           
+           
+           
+           
             </View>
           </View>
     </Modal>
@@ -251,6 +260,11 @@ const styles = StyleSheet.create({
         position: "absolute",
         left: 0,
         top:0,
+        borderTopLeftRadius: 30,
+        borderWidth: 1,
+        backgroundColor:"#3B83C3",
+        borderColor: "#3B83C3",
+        width: 50, height: 50, 
 
       },
 
