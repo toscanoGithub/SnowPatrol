@@ -1,7 +1,7 @@
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import { Button, Input, Text } from '@ui-kitten/components'
-import { Formik, FormikHelpers } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useUserContext } from '@/contexts/UserContext';
 import theme from "../../../theme.json";
@@ -35,7 +35,6 @@ const ContractorForm: React.FC<ContractorFormProps> = ({dismissModal, formHasFoc
 
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView style={{ flex: 1 }}behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <Formik 
                     initialValues={{
                         email: "malik@snow.com",
@@ -126,7 +125,6 @@ const ContractorForm: React.FC<ContractorFormProps> = ({dismissModal, formHasFoc
             }
             
                     </Formik>
-          </KeyboardAvoidingView>
     </View>
   )
 }

@@ -1,11 +1,11 @@
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import { Button, Input, Text } from '@ui-kitten/components'
-import { Formik, FormikHelpers } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useUserContext } from '@/contexts/UserContext';
 import theme from "../../../theme.json";
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import db from '@/firebase/firebase-config';
@@ -36,7 +36,6 @@ const DriverForm: React.FC<DriverFormProps> = ({dismissModal, formHasFocus}) => 
    
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView style={{ flex: 1 }}behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <Formik 
                     initialValues={{
                       idNumber: "",
@@ -105,7 +104,6 @@ const DriverForm: React.FC<DriverFormProps> = ({dismissModal, formHasFocus}) => 
             }
             
                     </Formik>
-          </KeyboardAvoidingView>
     </View>
   )
 }

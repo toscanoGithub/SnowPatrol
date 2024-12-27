@@ -9,6 +9,7 @@ import RouteForm from './forms/RouteForm'
 import { Customer, Driver } from '@/types/User'
 import { useCustomerrContext } from '@/contexts/CustomerContext'
 import { useDriverContext } from '@/contexts/DriverContext'
+import { IoIosCloseCircle } from "react-icons/io";
 
 interface PostModalProps {
     type: string;
@@ -104,10 +105,10 @@ const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
               <Button
                 status="danger" // Optional: Change the button's status to "danger" for a red color
                 onPress={dismissModal} // Handle the button press
-                appearance="ghost"
                 style={styles.closeBtn}
               >
-                <Text>X</Text>
+                {evaProps => <Text style={{color:"red", fontSize: 20, ...evaProps}} >X</Text>}
+                
               </Button>
             </View>
           </View>
@@ -240,6 +241,12 @@ const styles = StyleSheet.create({
         position: "absolute",
         left: 0,
         top:0,
+        borderTopLeftRadius: 30,
+        borderWidth: 1,
+        backgroundColor:"#3B83C3",
+        borderColor: "#3B83C3",
+        width: 50, height: 50, 
+
 
       },
 
