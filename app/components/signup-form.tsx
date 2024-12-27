@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Button, Input, Text } from '@ui-kitten/components';
 import { Formik } from 'formik';
@@ -17,6 +17,7 @@ import { useUserContext } from '@/contexts/UserContext';
 
 interface signupProp {
   dismissModal: () => void;  // Defining the function prop type
+  iHaveFocus: () => void;
 }
 
 interface FormValues {
@@ -36,7 +37,7 @@ const validationSchema = Yup.object().shape({
 });
 
 
-const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
+const SignupForm: React.FC<signupProp> = ({ dismissModal, iHaveFocus }) => {
 
   const {setUser} = useUserContext();
   
@@ -77,15 +78,11 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
 }
 
 
+const listenToFormFocusEvent = () => {
+  iHaveFocus()
+}
 
   return (
-    <KeyboardAvoidingView
-                  style={{ flex: 1 }}
-                  behavior={Platform.OS === "ios" ? "padding" : "height"}
-                  >
-
-      
-      <Text style={{textAlign:"center"}} category='s2'>Contractors are required to register.</Text>
       <Formik 
         initialValues={{
           email: 'malik@snow.com',
@@ -108,6 +105,7 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
           value={values.email}
           onChangeText={handleChange('email')}
           onBlur={handleBlur('email')}
+          onFocus={iHaveFocus}
           status={touched.email && errors.email ? 'danger' : 'basic'}
         />
         {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
@@ -120,6 +118,7 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
           value={values.companyName}
           onChangeText={handleChange('companyName')}
           onBlur={handleBlur('companyName')}
+          onFocus={iHaveFocus}
           status={touched.companyName && errors.companyName ? 'danger' : 'basic'}
         />
         {touched.companyName && errors.companyName && <Text style={styles.errorText}>{errors.companyName}</Text>}
@@ -132,6 +131,7 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
           value={values.password}
           onChangeText={handleChange('password')}
           onBlur={handleBlur('password')}
+          onFocus={iHaveFocus}
           status={touched.password && errors.password ? 'danger' : 'basic'}
         />
         {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
@@ -144,6 +144,7 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
           value={values.confirmPassword}
           onChangeText={handleChange('confirmPassword')}
           onBlur={handleBlur('confirmPassword')}
+          onFocus={iHaveFocus}
           status={touched.confirmPassword && errors.confirmPassword ? 'danger' : 'basic'}
         />
         {touched.confirmPassword && errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
@@ -162,7 +163,6 @@ const SignupForm: React.FC<signupProp> = ({ dismissModal }) => {
 }
 
       </Formik>
-    </KeyboardAvoidingView>
   )
 }
 
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
 
   input: {
     width:"100%",
-    paddingVertical: 15,
+    paddingVertical: 10,
     backgroundColor:"#cccccc"
   },
 

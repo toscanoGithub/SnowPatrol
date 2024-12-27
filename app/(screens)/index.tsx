@@ -20,12 +20,13 @@ import { useUserContext } from '@/contexts/UserContext'
 const auth = () => {
   
     const {user} = useUserContext()
-
     const {width, height} = Dimensions.get('window')
     const router = useRouter()
     const [modalIsVisible, setModalIsVisible] = useState<boolean>(false)
     const [modalType, setModalType] = useState("SIGN IN")
     const [isrewardDay, setIsrewardDay] = useState(false)
+    const [modalViewHeight, setModalViewHeight] = useState(80)
+    
     const dismissModal = () => {
         setModalIsVisible(!modalIsVisible)
       };
@@ -54,6 +55,13 @@ const auth = () => {
         console.log("------------- ", user?.companyName);
         
       }, [user])
+
+
+      const iHaveFocus = () => {
+        if(modalViewHeight === 80) {
+          setModalViewHeight(100)
+        }
+      }
       
 
   return (
@@ -93,7 +101,7 @@ const auth = () => {
       <Modal animationType="slide" transparent={true} visible={modalIsVisible}>
       <View style={styles.centeredView}>  
       
-            <View style={styles.modalView}>
+            <View style={[styles.modalView,  {height: `${modalViewHeight}%`}]}>
             <LinearGradient
         colors={["#0266B1", "#0266B190"]}
         style={styles.background}
@@ -110,7 +118,7 @@ const auth = () => {
                   <Text>X</Text>
               </Button>
               {/* AUTH FORM */}
-              {modalType === "SIGN UP" ? <SignupForm dismissModal={dismissModal} /> : <SigninForm dismissModal={dismissModal} />}
+              {modalType === "SIGN UP" ? <SignupForm iHaveFocus={iHaveFocus} dismissModal={dismissModal} /> : <SigninForm  iHaveFocus={iHaveFocus} dismissModal={dismissModal} />}
             </View>
           </View>
     </Modal>
@@ -233,8 +241,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
       },
       modalTitle: {
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: 10,
         textAlign: 'center',
         fontSize: 50,
         color: "#3B83C3",

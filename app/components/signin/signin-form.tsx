@@ -9,11 +9,13 @@ import { Customer } from '@/types/User';
 
 interface signinProp {
   dismissModal: () => void;  // Defining the function prop type
+  iHaveFocus: () => void;
 }
 
-const SigninForm: React.FC<signinProp> = ({ dismissModal }) => {
+const SigninForm: React.FC<signinProp> = ({ dismissModal, iHaveFocus }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [userType, setUserType] = useState("");
+  const [modalViewHeight, setModalViewHeight] = useState(80)
 
   const getUserType = (index: number) => {
     switch (index) {
@@ -34,14 +36,19 @@ const SigninForm: React.FC<signinProp> = ({ dismissModal }) => {
     setUserType(getUserType(selectedIndex))
   }, [selectedIndex])
 
+
+  const listenToFormFocusEvent = () => {
+    iHaveFocus()
+  }
+
   const populateForm = () => {
     switch (userType) {
       case "Customer":
-        return <CustomerForm />
+        return <CustomerForm formHasFocus={listenToFormFocusEvent}  dismissModal={dismissModal} />
       case "Contractor":
-        return <ContractorForm dismissModal={dismissModal} />
+        return <ContractorForm formHasFocus={listenToFormFocusEvent} dismissModal={dismissModal} />
       case "Driver":
-        return <DriverForm dismissModal={dismissModal} />
+        return <DriverForm formHasFocus={listenToFormFocusEvent} dismissModal={dismissModal} />
     
       default:
         break;
