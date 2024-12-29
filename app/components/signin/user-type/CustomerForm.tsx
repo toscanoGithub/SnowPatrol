@@ -9,7 +9,7 @@ import { getAuth } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import db from '@/firebase/firebase-config';
-import { Driver, User } from '@/types/User';
+import { Customer, Driver, User } from '@/types/User';
 
 
 
@@ -49,14 +49,14 @@ const CustomerForm: React.FC<DriverFormProps> = ({dismissModal, formHasFocus}) =
                       const q = query(collection(db, "customers"), where("companyName", "==", companyName),  where("email", "==", email));
                       const querySnapshot = await getDocs(q);
                       if(querySnapshot.empty) {
-                        alert("No Driver found, please try later or contact your Employer")
+                        alert("No Customer found, please try later or contact yhe contractor")
                       } else {
-                          const foundDrivers: Driver[] = []
+                          const foundCustomers: Customer[] = []
                           querySnapshot.forEach((doc) => {
-                          foundDrivers.push({id: doc.id, ...doc.data()} as Driver)               
+                            foundCustomers.push({id: doc.id, ...doc.data()} as Customer)               
                         });
-                        const foundDriver = foundDrivers.pop() as Driver;
-                        setUser(foundDriver)
+                        const foundCustomer = foundCustomers.pop() as Customer;
+                        setUser(foundCustomer)
                         dismissModal();
                         router.push("/(screens)/customer-screen")
                       }

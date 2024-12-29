@@ -39,7 +39,7 @@ export const CustomerContextProvider = ({ children }: { children: ReactNode }) =
         companyName: doc.data().companyName,
         phoneNumber: doc.data().phoneNumber,
         address: doc.data().address,
-        placeID: doc.data().place_id
+        placeID: doc.data().placeID
     }
         fetchedCustomers.push(customer)
         
