@@ -2,14 +2,13 @@ import {Animated, Easing, Modal, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import theme from "../../../theme.json"
 import { LinearGradient } from 'expo-linear-gradient'
-import { Button, Text } from '@ui-kitten/components'
+import { Button, Icon, Text } from '@ui-kitten/components'
 import DriverForm from './forms/DriverForm'
 import CustomerForm from './forms/CustomerForm'
 import RouteForm from './forms/RouteForm'
 import { Customer, Driver } from '@/types/User'
 import { useCustomerrContext } from '@/contexts/CustomerContext'
 import { useDriverContext } from '@/contexts/DriverContext'
-import { IoIosCloseCircle } from "react-icons/io";
 
 interface PostModalProps {
     type: string;
@@ -17,6 +16,8 @@ interface PostModalProps {
     dismiss: () => void;
     
 }
+
+
 const PostModal: React.FC<PostModalProps> = ({ type, visible, dismiss }) => {
     const [modalIsVisible, setModalIsVisible] = useState<boolean>(false)
     const [slideAnim] = useState(new Animated.Value(0)); // Initial value for the slide animation

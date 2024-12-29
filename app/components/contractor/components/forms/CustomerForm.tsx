@@ -27,7 +27,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ addCustomer, formHasFocus }
   // Handle address change with a useCallback to optimize re-renders
   const handleAddressChange = useCallback(
     (data: { description: string; place_id: string; }) => {
-      console.log('Google Places onPress Triggered');
       setAddress(data.description)
       setPlaceID(data.place_id)
     },
