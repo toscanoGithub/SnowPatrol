@@ -1,26 +1,29 @@
 import Constants from "expo-constants"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet} from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import axios from 'axios';
 import { useCustomerrContext } from '@/contexts/CustomerContext';
-import { Button, Icon, IconElement, Text } from '@ui-kitten/components';
+import { Button, Text } from '@ui-kitten/components';
 import theme from "../../theme.json"
 
 const GOOGLE_API_KEY = Constants?.expoConfig?.extra?.GOOGLE_API_KEY;  // see app.json >> extra
 
+// const screenHeight = Dimensions.get("screen").height;
 interface RouteOptimizerProps {
   placeIds: string[];
   splitAmount: number;
+  showRouteInfo: () => void;
 }
 
-const RouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAmount }) => {
+const RouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAmount, showRouteInfo }) => {
   const [places, setPlaces] = useState<any[]>([]);
   const [route, setRoute] = useState<any | null>(null);
   const mapRef = useRef<MapView | null>(null);
   const {customers} = useCustomerrContext()
 
+  // const [isDetailsVisible, setIsShowDetailsVisible] = useState(false)
   useEffect(() => {
     fetchPlaces()
   }, [customers.length])
@@ -178,9 +181,44 @@ const resizeText = () => {
     );
   }
 
+
+
+  // // Show route info
+  // const showRouteInfo = () => {
+  //   setIsShowDetailsVisible(!isDetailsVisible)
+    
+  // }
+
+  // useEffect(() => {
+  //   if(isDetailsVisible) slideIn()
+  // }, [isDetailsVisible])
+  
+  //   const slideAnim = React.useRef(new Animated.Value(-screenHeight)).current; // Start off-screen (above the screen)
+  
+  // const slideIn = () => {
+  //     Animated.timing(slideAnim, {
+  //       toValue: -screenHeight/2, // Slide to the top of the screen
+  //       duration: 500, // Animation duration
+  //       useNativeDriver: true, // Use native driver for better performance
+  //     }).start();
+  //     setIsShowDetailsVisible(true);
+  //   };
+  
+  //   const slideOut = () => {
+  //     console.log("out");
+      
+  //     Animated.timing(slideAnim, {
+  //       toValue: -300, // Slide back up off-screen
+  //       duration: 500, 
+  //       useNativeDriver: true,
+  //     }).start();
+  //     setIsShowDetailsVisible(false);
+  //   };
+
+
   return (
       <View style={{position:"relative", flexDirection:"row",  flex: 1, marginVertical: 5, width: `${splitAmount === 0 ? "100%" : "100%"}`}}>
-          <Button onPress={() => alert("see details")} style={{alignSelf:"center", height:"100%", backgroundColor:theme["color-primary-600"]}}>
+          <Button onPress={showRouteInfo} style={{alignSelf:"center", height:"100%", backgroundColor:theme["color-primary-600"]}}>
             {verticalText('Info')}
           </Button>
 
@@ -194,16 +232,17 @@ const resizeText = () => {
           longitudeDelta: 0.0421,
         }}
       >
-        {places.map((place, index) => (
-          <Marker
-            key={index}
-            coordinate={{
-              latitude: place.geometry.location.lat,
-              longitude: place.geometry.location.lng,
-            }}
-            title={place.name}
-          />
-        ))}
+        {places.map((place, index) => {
+          
+          return <Marker
+          key={index}
+          coordinate={{
+            latitude: place.geometry.location.lat,
+            longitude: place.geometry.location.lng,
+          }}
+          title={place.name}
+        />
+        })}
 
         {route && (
           <Polyline
@@ -213,6 +252,8 @@ const resizeText = () => {
           />
         )}
       </MapView>
+
+      
       </View>
   );
 };
@@ -250,7 +291,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'center',
-  }
+  },
+
+  slideContainer: {
+    position: 'absolute',
+    
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#617BB3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    zIndex: 2000
+  },
  
 });
 

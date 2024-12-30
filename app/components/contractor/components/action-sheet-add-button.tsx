@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     button: {
         position: 'absolute',
         right: 20,
-        bottom: "10%",
+        bottom: 0,
         backgroundColor: theme["color-primary-500"], // Tomato color
         width: 60,
         height: 60,
@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
         shadowColor: theme["color-primary-900"], // Adds shadow on iOS
         shadowOpacity: 0.1,
         shadowRadius: 10,
+        zIndex: 3000,
       },
       iconWrapper: {
         justifyContent: 'center',

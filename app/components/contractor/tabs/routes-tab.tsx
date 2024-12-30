@@ -1,4 +1,4 @@
-import { Alert, FlatList, StyleSheet, View } from 'react-native'
+import { Alert, Animated, Dimensions, FlatList, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SelectItem, Text, Select, IndexPath, ListItem, List } from '@ui-kitten/components';
 import ActionSheetAddButton from '../components/action-sheet-add-button';
@@ -10,6 +10,9 @@ import axios from 'axios';
 import MapView, { Marker } from 'react-native-maps';
 import { string } from 'yup';
 import RouteSplitter from '../../routes/RouteSplitter';
+import RouteDetails from '../../routes/Routedetails';
+
+const screenHeight = Dimensions.get("screen").height;
 
 const API_KEY = 'AIzaSyBgI-ZMFT0hjPpRGMLuwtQEnniFOrV0WAI'; 
 const API_URL = 'https://maps.googleapis.com/maps/api/directions/json';
@@ -52,6 +55,9 @@ const [selectedRoute, setSelectedRoute] = useState<Leg | null>(null)
 const [placeIds, setPlaceIds] = useState<string[]>([])
 const [firstPlaceIds, setFirstPlaceIds] = useState<string[]>([])
 const [secondPlaceIds, setSecondPlaceIds] = useState<string[]>([])
+const [isDetailsVisible, setIsShowDetailsVisible] = useState(false)
+
+const [routePlaceIdsForRouteDetails, setRoutePlaceIdsForRouteDetails] = useState<string[]>([])
 // Split
 const [splitTo, setSplitTo] = useState(0)
 
@@ -78,6 +84,34 @@ useEffect(() => {
     <ListItem onPress={() => splitPressed(index + 2)}  title={`${index + 2} ${item.title} `} />
   );
 
+  const showRouteInfo = (placeIds: string[]) => {
+    slideIn()
+    setRoutePlaceIdsForRouteDetails(placeIds)
+    
+  }
+
+  const slideAnim = React.useRef(new Animated.Value(-screenHeight)).current; // Start off-screen (above the screen)
+    
+    const slideIn = () => {
+        Animated.timing(slideAnim, {
+          toValue: 0, // Slide to the top of the screen
+          duration: 500, // Animation duration
+          useNativeDriver: true, // Use native driver for better performance
+        }).start();
+        setIsShowDetailsVisible(true);
+      };
+    
+      const slideOut = () => {
+        console.log("out");
+        
+        Animated.timing(slideAnim, {
+          toValue: -screenHeight, // Slide back up off-screen
+          duration: 500, 
+          useNativeDriver: true,
+        }).start();
+        setIsShowDetailsVisible(false);
+      };
+
 return (
   <View style={{ flex: 1 }}>
    <View style={{width:"100%", flexDirection:"row", justifyContent: "space-between", alignItems:"center"}}>
@@ -89,7 +123,11 @@ return (
     />
     </View>
     </View>
-      <RouteSplitter  splitAmount={splitTo} />
+      <RouteSplitter  splitAmount={splitTo} shareRouteInfo={showRouteInfo} />
+
+    <Animated.View style={[styles.overlay, { transform: [{ translateY: slideAnim }] }]}>
+      <RouteDetails dismiss={slideOut} placeIds={routePlaceIdsForRouteDetails} />
+    </Animated.View>
     
   </View>
 );
@@ -100,6 +138,18 @@ container: {
   flex: 1,
   padding: 16,
 },
+
+overlay: {
+  position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "100%",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+    justifyContent: 'center',
+    alignItems: 'center',
+}
 
 });
 
