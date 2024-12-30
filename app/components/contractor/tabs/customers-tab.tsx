@@ -9,6 +9,7 @@ import ActionSheetAddButton from '../components/action-sheet-add-button'
 import PostModal from '../components/post-modal'
 import { useCustomerrContext } from '@/contexts/CustomerContext'
 import { useUserContext } from '@/contexts/UserContext'
+import { LinearGradient } from 'expo-linear-gradient'
 
   const CustomersTab = () => {
   const [modalIsVisible, setModalIsVisible] = useState(false)
@@ -77,8 +78,8 @@ useEffect(() => {
         />
 
         {
-            filteredCustomers.length > 0 ? (<View style={{flex: 0.8,}}><FlatList data={filteredCustomers} renderItem={ renderCustomerItem} keyExtractor={(item) => item.address}
-            /></View>) : <View><Text>No Customer yet</Text></View>
+            filteredCustomers.length > 0 ? (<LinearGradient style={{flex: 1,}} colors={[theme["gradient-from"], "#e7f0fd"]}><View ><FlatList data={filteredCustomers} renderItem={ renderCustomerItem} keyExtractor={(item) => item.address}
+            /></View></LinearGradient>) : <View><Text>No Customer yet</Text></View>
         }
 
         {modalIsVisible && <PostModal type="Customer" visible={modalIsVisible} dismiss={dismiss} />}
@@ -93,16 +94,17 @@ const styles = StyleSheet.create({
         flex: 1,
         margin: 0,
         padding: 0,
+        position:"relative",
+        paddingBottom: 60,
+        backgroundColor:"#e7f0fd"
     },
 
     customerItem: {
         padding: 10,
-        borderBottomWidth: 1,
         marginBottom: 10,
         marginHorizontal: 3,
         borderRadius: 5,
-        // boxShadow: "rgba(230, 45, 70, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.1) 0px 1px 2px",
-        backgroundColor: theme["color-primary-500"]
+        boxShadow: "rgba(50, 50, 93, 0.25) 0px 13px 27px -25px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px"
       },
 
       actions: {

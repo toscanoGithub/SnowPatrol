@@ -37,10 +37,11 @@ interface DirectionsResponse {
 
 interface RouteSplitterProps {
   splitAmount: number;
+  shareRouteInfo: (placeIds: string[]) => void;
 }
 
 
-const RouteSplitter: React.FC<RouteSplitterProps> = ({splitAmount}) => {
+const RouteSplitter: React.FC<RouteSplitterProps> = ({splitAmount, shareRouteInfo}) => {
     const {customers} = useCustomerrContext()
     const [routes, setRoutes] = useState<Leg[]>([]);
     const [selectedRoute, setSelectedRoute] = useState<Leg | null>(null)
@@ -49,6 +50,8 @@ const RouteSplitter: React.FC<RouteSplitterProps> = ({splitAmount}) => {
     const [secondPlaceIds, setSecondPlaceIds] = useState<string[]>([])
     const [thirdPlaceIds, setThirdPlaceIds] = useState<string[]>([])
     const [fourthPlaceIds, setFourthPlaceIds] = useState<string[]>([])
+
+    
 
   // Helper function to fetch directions from the Google Maps API
 const getDirections = async (waypoints: string[]) => {
@@ -120,29 +123,27 @@ const getDirections = async (waypoints: string[]) => {
     setPlaceIds(prev => customers.map(c => c.placeID))
   }, [])
 
-
- 
   const layoutTheRoutes = () => {
     switch (splitAmount) {
       case 0:
-        return <RouteOptimizer splitAmount={0} placeIds={placeIds}/>
+        return <RouteOptimizer showRouteInfo={() => shareRouteInfo(placeIds)} splitAmount={0} placeIds={placeIds}/>
       case 2:
         return <>
-          <RouteOptimizer splitAmount={2}  placeIds={firstPlaceIds}/> 
-          <RouteOptimizer splitAmount={2}  placeIds={secondPlaceIds}/>
+          <RouteOptimizer showRouteInfo={() => shareRouteInfo(firstPlaceIds)} splitAmount={2}  placeIds={firstPlaceIds}/> 
+          <RouteOptimizer showRouteInfo={() => shareRouteInfo(secondPlaceIds)} splitAmount={2}  placeIds={secondPlaceIds}/>
         </>
       case 3:
         return <>
-        <RouteOptimizer splitAmount={3} placeIds={firstPlaceIds}/>
-        <RouteOptimizer splitAmount={3} placeIds={secondPlaceIds}/>
-        <RouteOptimizer splitAmount={3} placeIds={thirdPlaceIds}/>
+        <RouteOptimizer showRouteInfo={() => shareRouteInfo(firstPlaceIds)} splitAmount={3} placeIds={firstPlaceIds}/>
+        <RouteOptimizer showRouteInfo={() => shareRouteInfo(secondPlaceIds)} splitAmount={3} placeIds={secondPlaceIds}/>
+        <RouteOptimizer showRouteInfo={() => shareRouteInfo(thirdPlaceIds)} splitAmount={3} placeIds={thirdPlaceIds}/>
       </>
       case 4:
         return <>
-        <RouteOptimizer splitAmount={4} placeIds={firstPlaceIds}/>
-        <RouteOptimizer splitAmount={4} placeIds={secondPlaceIds}/>
-        <RouteOptimizer splitAmount={4} placeIds={thirdPlaceIds}/>
-        <RouteOptimizer splitAmount={4} placeIds={fourthPlaceIds}/>
+        <RouteOptimizer showRouteInfo={() => shareRouteInfo(firstPlaceIds)} splitAmount={4} placeIds={firstPlaceIds}/>
+        <RouteOptimizer showRouteInfo={() => shareRouteInfo(secondPlaceIds)} splitAmount={4} placeIds={secondPlaceIds}/>
+        <RouteOptimizer showRouteInfo={() => shareRouteInfo(thirdPlaceIds)} splitAmount={4} placeIds={thirdPlaceIds}/>
+        <RouteOptimizer showRouteInfo={() => shareRouteInfo(fourthPlaceIds)} splitAmount={4} placeIds={fourthPlaceIds}/>
       </>
         
       default:
