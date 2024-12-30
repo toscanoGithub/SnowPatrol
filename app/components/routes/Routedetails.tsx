@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import theme from "../../theme.json"
 import { useCustomerrContext } from '@/contexts/CustomerContext';
-import { Customer } from '@/types/User';
+import { Customer, Driver } from '@/types/User';
+import ButtonAttachDriver from './ButtonAttachDriver';
 
 interface RouteDetailsProps {
     dismiss: () => void;
@@ -14,13 +15,11 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({dismiss, placeIds}) => {
 
     const [places, setPlaces] = useState<Customer[]>([]) // a place represent a customer
     const {customers} = useCustomerrContext()
-
     const showFilteredCustomers = () => {
         // Filter customers whose placeId is in listIds
         const filteredCustomers = customers.filter((customer) =>
             placeIds.includes(customer.placeID)
         );
-
         setPlaces(filteredCustomers)
         
     }
@@ -29,20 +28,28 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({dismiss, placeIds}) => {
       showFilteredCustomers()
     }, [placeIds])
     
+    const [attachedDriver, setAttachedDriver] = useState<Driver>()
 
   return (
     <LinearGradient style={styles.container} colors={[theme["gradient-from"], "#e7f0fd"]}>
       {/* CLOSE BUTTON */}
-                    <Button
-                      status="danger" // Optional: Change the button's status to "danger" for a red color
-                      onPress={dismiss} // Handle the button press
-                      style={[styles.closeBtn,]}
-                    >
-                      {evaProps => <Text style={{color:"red", fontSize: 20, ...evaProps}} >X</Text>}
-                      
-                    </Button>
-      <View>
-        <Text category='h1'>Route Details</Text>
+        <Button
+            status="danger" // Optional: Change the button's status to "danger" for a red color
+            onPress={dismiss} // Handle the button press
+            style={[styles.closeBtn,]}
+        >
+            {evaProps => <Text style={{color:"red", fontSize: 20, ...evaProps}} >X</Text>}
+            
+        </Button>
+      <View style={{paddingBottom: 150}}>
+        <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", padding: 8 }}>
+            {attachedDriver && <View>
+                <Text category='h6' style={{color:"#dedede90", fontSize: 16}}>{attachedDriver?.fullName}</Text>
+                <Text category='h6' style={{color:"#dedede90", fontSize: 16}}>ID number: {attachedDriver?.idNumber}</Text>
+            </View>}
+
+        <ButtonAttachDriver assignDriver={(driver: Driver) => setAttachedDriver(driver) } />
+        </View>
         <View>
             
                 <FlatList data={places} renderItem={({item}) => {
@@ -72,7 +79,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     
     right: 10,
-    bottom: 10,
+    bottom: 25,
     borderTopLeftRadius: 30,
     borderWidth: 1,
     backgroundColor:theme["gradient-to"],

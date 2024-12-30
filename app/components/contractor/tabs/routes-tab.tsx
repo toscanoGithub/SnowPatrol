@@ -113,7 +113,7 @@ useEffect(() => {
       };
 
 return (
-  <View style={{ flex: 1 }}>
+  <View style={styles.container}>
    <View style={{width:"100%", flexDirection:"row", justifyContent: "space-between", alignItems:"center"}}>
     <Text category='h6' style={{marginLeft: 10}}>Split in: </Text>
     <View>
@@ -136,7 +136,6 @@ return (
 const styles = StyleSheet.create({
 container: {
   flex: 1,
-  padding: 16,
 },
 
 overlay: {
