@@ -1,9 +1,9 @@
 import db from '@/firebase/firebase-config';
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { useUserContext } from './UserContext';
-import { Customer } from '@/types/User';
+import { Customer, Driver } from '@/types/User';
 
 
 
@@ -11,7 +11,8 @@ import { Customer } from '@/types/User';
 interface CustomerContextType {
     customers: Customer[];
     addCustomerToContext: (customer: Customer) => void;
-    getCustomerById: (id: string) => Customer | undefined;
+    getCustomerById: (email: string) => Customer | undefined;
+    updateCustomerInContext: (customer: Customer, driver: Driver) => void;
 }
 
 // Create a context with default values
@@ -39,7 +40,8 @@ export const CustomerContextProvider = ({ children }: { children: ReactNode }) =
         companyName: doc.data().companyName,
         phoneNumber: doc.data().phoneNumber,
         address: doc.data().address,
-        placeID: doc.data().placeID
+        placeID: doc.data().placeID,
+        driver: doc.data().driver
     }
         fetchedCustomers.push(customer)
         
@@ -73,8 +75,43 @@ export const CustomerContextProvider = ({ children }: { children: ReactNode }) =
         return customers.find((customer) => customer.id === id);
     };
 
+    const updateCustomerInContext = async (customer: Customer, driver: Driver) => {
+        try {
+            
+            // update jobs collection >>>> InterestedBy
+      const customers = collection(db, "customers");
+      // Create a query to find the user(s) with a specific name
+      const q = query(customers, where("email", "==", customer.email));
+      const querySnapshot = await getDocs(q);
+      if(!querySnapshot.empty) {
+        querySnapshot.forEach(async (docSnapshot) => {          
+          // Get document reference
+          const customerDocRef = doc(db, "customers", docSnapshot.id);
+          // Update the "interestedBy" field of the document
+          await updateDoc(customerDocRef, {
+            driver: driver
+          });
+        });
+    }
+ } catch (e) {
+        console.error("Error updating customer:", e);
+    }
+
+        // Optionally, update the local context/state
+        setCustomers((prevCustomers) =>
+            prevCustomers.map((c) =>
+                c.email === customer.email ? { ...c, ...customer, driver } : c
+            )
+        );
+
+        console.log("Customer updated successfully");
+
+    
+    };
+    
+
     return (
-        <CustomerContext.Provider value={{ customers, addCustomerToContext, getCustomerById }}>
+        <CustomerContext.Provider value={{ customers, addCustomerToContext, getCustomerById, updateCustomerInContext }}>
             {children}
         </CustomerContext.Provider>
     );

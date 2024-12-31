@@ -22,4 +22,13 @@ export interface Customer {
     companyName: string;
     address: string;
     placeID: string;
+    driver?: Driver;
 }
+
+export interface Route {
+    id?: string;
+    attachedDriver: Driver;
+    placeIds: string[];
+    companyName: string;
+}
+

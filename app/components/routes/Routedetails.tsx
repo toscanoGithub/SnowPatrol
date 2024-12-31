@@ -6,6 +6,11 @@ import theme from "../../theme.json"
 import { useCustomerrContext } from '@/contexts/CustomerContext';
 import { Customer, Driver } from '@/types/User';
 import ButtonAttachDriver from './ButtonAttachDriver';
+import { useRouteContext } from '@/contexts/RouteContext';
+import {Route} from "../../../types/User"
+import { useUserContext } from '@/contexts/UserContext';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import db from '@/firebase/firebase-config';
 
 interface RouteDetailsProps {
     dismiss: () => void;
@@ -13,13 +18,41 @@ interface RouteDetailsProps {
 }
 const RouteDetails: React.FC<RouteDetailsProps> = ({dismiss, placeIds}) => {
 
+  const {user} = useUserContext()
+  const {routes} = useRouteContext()
+
     const [places, setPlaces] = useState<Customer[]>([]) // a place represent a customer
-    const {customers} = useCustomerrContext()
-    const showFilteredCustomers = () => {
+    const {customers, updateCustomerInContext} = useCustomerrContext()
+    const showFilteredCustomers = async () => {
         // Filter customers whose placeId is in listIds
         const filteredCustomers = customers.filter((customer) =>
             placeIds.includes(customer.placeID)
         );
+
+        const hasDriver = filteredCustomers.some(obj => obj.hasOwnProperty("driver"))
+        if(hasDriver) {
+          console.log("filteredCustomers>>>>>>>>>>>>", filteredCustomers);
+          
+          setAttachedDriver(filteredCustomers[0]?.driver)
+        } else {
+          // get customers from firestore docs
+          const q = query(collection(db, "customers"), where("driver", "!=", null));
+          
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.log("No customers registered yet");
+        } else {
+            querySnapshot.forEach((doc) => {
+                const customerData = doc.data();
+                setAttachedDriver(customerData.driver)
+                return;
+                
+        })
+
+        }
+      }
+        
         setPlaces(filteredCustomers)
         
     }
@@ -27,9 +60,19 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({dismiss, placeIds}) => {
     useEffect(() => {
       showFilteredCustomers()
     }, [placeIds])
-    
+
     const [attachedDriver, setAttachedDriver] = useState<Driver>()
 
+    const assignDriver = (driver: Driver) => {
+      setAttachedDriver(driver)
+      // iterate over customers that their placeId is in the placeIds
+      const customersInTHisRoute = customers.filter(customer => placeIds.includes(customer.placeID))
+      customersInTHisRoute.forEach(customer => updateCustomerInContext(customer, driver))
+
+
+      // const route: Route = {attachedDriver: driver, placeIds: placeIds, companyName: user!.companyName};
+      // addRouteToContext(route)
+    }
   return (
     <LinearGradient style={styles.container} colors={[theme["gradient-from"], "#e7f0fd"]}>
       {/* CLOSE BUTTON */}
@@ -48,7 +91,7 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({dismiss, placeIds}) => {
                 <Text category='h6' style={{color:"#dedede90", fontSize: 16}}>ID number: {attachedDriver?.idNumber}</Text>
             </View>}
 
-        <ButtonAttachDriver assignDriver={(driver: Driver) => setAttachedDriver(driver) } />
+        <ButtonAttachDriver assignDriver={(driver: Driver) => assignDriver(driver) } />
         </View>
         <View>
             
@@ -57,6 +100,7 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({dismiss, placeIds}) => {
                         <Text>{item.fullName}</Text>
                         <Text>{item.email}</Text>
                         <Text>{item.address}</Text>
+                        {item.driver ? <Text>{item.driver.fullName}</Text> : null}
                     </View>
                 }} keyExtractor={(item) => item.placeID}   />
             
