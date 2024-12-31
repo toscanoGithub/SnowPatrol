@@ -24,9 +24,7 @@ export const CustomerContextProvider = ({ children }: { children: ReactNode }) =
     const {user} = useUserContext()
     const fetchedCustomers: Customer[] = []
 
-    const fetchCustomers = async () => {    
-        console.log(">>>>>>>>>>>", user);
-        
+    const fetchCustomers = async () => {                    
     const q = query(collection(db, "customers"), where("companyName", "==", user!.companyName));
     const querySnapshot = await getDocs(q);
     if(querySnapshot.empty) {
