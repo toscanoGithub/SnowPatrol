@@ -9,6 +9,8 @@ import { Button, Text } from '@ui-kitten/components';
 import theme from "../../theme.json"
 import { addDoc, collection } from "firebase/firestore";
 import db from "@/firebase/firebase-config";
+import { useUserContext } from "@/contexts/UserContext";
+import { Driver, User } from "@/types/User";
 
 const GOOGLE_API_KEY = Constants?.expoConfig?.extra?.GOOGLE_API_KEY;  // see app.json >> extra
 
@@ -24,6 +26,7 @@ const RouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAmount, 
   const [route, setRoute] = useState<any | null>(null);
   const mapRef = useRef<MapView | null>(null);
   const {customers} = useCustomerrContext()
+  const {user} = useUserContext()
 
   // const [isDetailsVisible, setIsShowDetailsVisible] = useState(false)
   useEffect(() => {
@@ -220,9 +223,9 @@ const resizeText = () => {
 
   return (
       <View style={{position:"relative", flexDirection:"row",  flex: 1, marginVertical: 5, width: `${splitAmount === 0 ? "100%" : "100%"}`}}>
-          <Button onPress={showRouteInfo} style={{alignSelf:"center", height:"100%", backgroundColor:theme["color-primary-600"]}}>
+          {typeof(user as User) && (<Button onPress={showRouteInfo} style={{alignSelf:"center", height:"100%", backgroundColor:theme["color-primary-600"]}}>
             {verticalText('Info')}
-          </Button>
+          </Button>)}
 
       <MapView
         ref={mapRef}

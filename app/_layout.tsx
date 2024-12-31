@@ -51,13 +51,17 @@ export default function RootLayout() {
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack >
             <Stack.Screen name="(screens)/index" options={{headerShown: false}}/>
-                {/* <Stack.Screen name="(screens)/contractor-screen" options={{title: user?.companyName}}  /> */}
                 <Stack.Screen name="(screens)/contractor-screen" options={{header: (props) => {
                   const {user} = useUserContext()
                   return <Header companyName={user?.companyName} email={user?.email} />
                 }}} />
 
-                <Stack.Screen name="(screens)/driver-screen" options={{headerShown: true, title:"Driver", headerBackVisible: false}}/>
+<Stack.Screen name="(screens)/driver-screen" options={{header: (props) => {
+                  const {user} = useUserContext()
+                  return <Header companyName={user?.companyName} email={user?.email} />
+                }}} />
+
+                {/* <Stack.Screen name="(screens)/driver-screen" options={{headerShown: true, title:"Driver", headerBackVisible: false}}/> */}
                 <Stack.Screen name="(screens)/customer-screen" options={{headerShown: true, title:"Customer", headerBackVisible: false}}/>
                 <Stack.Screen name="+not-found" />
             </Stack>

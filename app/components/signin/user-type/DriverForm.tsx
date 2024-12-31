@@ -38,8 +38,8 @@ const DriverForm: React.FC<DriverFormProps> = ({dismissModal, formHasFocus}) => 
     <View style={styles.container}>
             <Formik 
                     initialValues={{
-                      idNumber: "",
-                        companyName: "",
+                      idNumber: "5613",
+                        companyName: "Snow Patrol",
                     }}
                     validationSchema={validationSchema}
                     
