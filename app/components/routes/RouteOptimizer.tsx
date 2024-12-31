@@ -7,6 +7,8 @@ import axios from 'axios';
 import { useCustomerrContext } from '@/contexts/CustomerContext';
 import { Button, Text } from '@ui-kitten/components';
 import theme from "../../theme.json"
+import { addDoc, collection } from "firebase/firestore";
+import db from "@/firebase/firebase-config";
 
 const GOOGLE_API_KEY = Constants?.expoConfig?.extra?.GOOGLE_API_KEY;  // see app.json >> extra
 

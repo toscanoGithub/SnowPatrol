@@ -11,6 +11,8 @@ import MapView, { Marker } from 'react-native-maps';
 import { string } from 'yup';
 import RouteSplitter from '../../routes/RouteSplitter';
 import RouteDetails from '../../routes/Routedetails';
+import { useRouteContext } from '@/contexts/RouteContext';
+import { useUserContext } from '@/contexts/UserContext';
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -50,7 +52,6 @@ const data = new Array(3).fill({
 const RoutesTab = () => {
 const [modalIsVisible, setModalIsVisible] = useState(false)
 const {customers} = useCustomerrContext()
-const [routes, setRoutes] = useState<Leg[]>([]);
 const [selectedRoute, setSelectedRoute] = useState<Leg | null>(null)
 const [placeIds, setPlaceIds] = useState<string[]>([])
 const [firstPlaceIds, setFirstPlaceIds] = useState<string[]>([])
@@ -84,9 +85,17 @@ useEffect(() => {
     <ListItem onPress={() => splitPressed(index + 2)}  title={`${index + 2} ${item.title} `} />
   );
 
+
+  const {routes, addRouteToContext} = useRouteContext()
+  const {user} = useUserContext()
+
   const showRouteInfo = (placeIds: string[]) => {
     slideIn()
     setRoutePlaceIdsForRouteDetails(placeIds)
+    // addRouteToContext({
+    //   placeIds: placeIds,
+    //   companyName: user?.companyName
+    // })
     
   }
 
