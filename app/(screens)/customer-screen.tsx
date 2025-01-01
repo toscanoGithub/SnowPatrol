@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { ref, onValue, off, query } from 'firebase/database';
-import { database } from '../../firebase/firebase-config';  // Firebase config
+import { ref, onValue, off } from 'firebase/database';
+import { database } from '../../firebase/firebase-config'; // Firebase config
 import { Button } from '@ui-kitten/components';
 import theme from "../theme.json";
 import { useUserContext } from '../../contexts/UserContext';  // Assuming you have UserContext to get customer info
-import { collection, where } from 'firebase/firestore';
 import { useCustomerrContext } from '@/contexts/CustomerContext';
 
-interface CustomerScreenProps {
-}
+interface CustomerScreenProps {}
 
 const CustomerScreen: React.FC<CustomerScreenProps> = () => {
   const [driverId, setDriverId] = useState<string | null>(null);
@@ -22,18 +20,14 @@ const CustomerScreen: React.FC<CustomerScreenProps> = () => {
     longitudeDelta: 0.0421,
   });
   const [loading, setLoading] = useState(true);
-  
-  // Fetching customer data to get the assigned driverId
-  const {getCustomerById} = useCustomerrContext()
 
-  const {user} = useUserContext()
+  const { user } = useUserContext();
+  const { getCustomerById } = useCustomerrContext();
+
   useEffect(() => {
     console.log("customer id ", user?.id);
-    setDriverId(user?.driver?.id || 'no driver id')
-    
-    
-  }, [user?.id])
-  
+    setDriverId(user?.driver?.id || 'no driver id');
+  }, [user?.id]);
 
   // Fetching driver's real-time location once driverId is available
   useEffect(() => {
@@ -64,7 +58,16 @@ const CustomerScreen: React.FC<CustomerScreenProps> = () => {
       latitudeDelta: 0.05,
       longitudeDelta: 0.05,
     };
-    setRegion(newRegion);
+    setRegion((prevRegion) => {
+      // Update the region only if it's different (to avoid unnecessary re-renders)
+      if (
+        prevRegion.latitude !== newRegion.latitude ||
+        prevRegion.longitude !== newRegion.longitude
+      ) {
+        return newRegion;
+      }
+      return prevRegion;
+    });
   };
 
   const openGoogleMaps = () => {
