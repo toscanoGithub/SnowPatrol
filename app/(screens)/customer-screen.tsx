@@ -1,44 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { get, ref, onValue } from 'firebase/database';
-import { database } from '../../firebase/firebase-config'; // Import Firebase config
+import { ref, onValue, off, query } from 'firebase/database';
+import { database } from '../../firebase/firebase-config';  // Firebase config
+import { Button } from '@ui-kitten/components';
+import theme from "../theme.json";
+import { useUserContext } from '../../contexts/UserContext';  // Assuming you have UserContext to get customer info
+import { collection, where } from 'firebase/firestore';
+import { useCustomerrContext } from '@/contexts/CustomerContext';
 
-const CustomerScreen = ({ driverId }: { driverId: string }) => {
+interface CustomerScreenProps {
+}
+
+const CustomerScreen: React.FC<CustomerScreenProps> = () => {
+  const [driverId, setDriverId] = useState<string | null>(null);
   const [driverLocation, setDriverLocation] = useState<any>(null);
   const [region, setRegion] = useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
+    latitude: 37.78825, // Default initial latitude
+    longitude: -122.4324, // Default initial longitude
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+  const [loading, setLoading] = useState(true);
+  
+  // Fetching customer data to get the assigned driverId
+  const {getCustomerById} = useCustomerrContext()
 
+  const {user} = useUserContext()
   useEffect(() => {
-    // Listen to the driver's location changes in real-time
-    const driverLocationRef = ref(database, `drivers/${driverId}/location`);
-    const onLocationChange = onValue(driverLocationRef, (snapshot) => {
-      const locationData = snapshot.val();
-      if (locationData) {
-        setDriverLocation(locationData);
-        // Optionally, center map on the driver location
-        setRegion({
-          latitude: locationData.latitude,
-          longitude: locationData.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        });
+    console.log("customer id ", user?.id);
+    setDriverId(user?.driver?.id || 'no driver id')
+    
+    
+  }, [user?.id])
+  
+
+  // Fetching driver's real-time location once driverId is available
+  useEffect(() => {
+    if (!driverId) return;
+
+    const driverLocationRef = ref(database, `/drivers/${driverId}/location`);
+    onValue(driverLocationRef, (snapshot) => {
+      const location = snapshot.val();
+      if (location) {
+        setDriverLocation(location);
+        centerMapOnDriver(location);
+        setLoading(false); // Once we have the location, stop the loading spinner
+      } else {
+        console.log("Driver location not available yet");
       }
     });
 
-    // Cleanup the listener when the component unmounts
     return () => {
-      onLocationChange();
+      const driverLocationRef = ref(database, `/drivers/${driverId}/location`);
+      off(driverLocationRef); // Clean up the listener when the component unmounts
     };
-  }, [driverId]);
+  }, [driverId]); // Re-fetch when the driverId changes
+
+  const centerMapOnDriver = (location: any) => {
+    const newRegion = {
+      latitude: location.latitude,
+      longitude: location.longitude,
+      latitudeDelta: 0.05,
+      longitudeDelta: 0.05,
+    };
+    setRegion(newRegion);
+  };
+
+  const openGoogleMaps = () => {
+    console.log('Open Google Maps for route');
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={theme["color-primary-600"]} />
+        <Text>Loading Driver's Location...</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <MapView style={styles.map} region={region}>
+    <View style={{ flex: 1 }}>
+      <Button
+        onPress={openGoogleMaps}
+        style={{ backgroundColor: theme["color-primary-600"] }}
+      >
+        Open Route in Google Maps
+      </Button>
+
+      <MapView
+        style={styles.map}
+        region={region}
+        onRegionChangeComplete={(newRegion) => setRegion(newRegion)} // Allow customer to manually move the map
+        showsUserLocation={false}
+      >
         {driverLocation && (
           <Marker
             coordinate={{
@@ -55,12 +111,9 @@ const CustomerScreen = ({ driverId }: { driverId: string }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   map: {
     width: '100%',
-    height: '100%',
+    flex: 1,
   },
 });
 

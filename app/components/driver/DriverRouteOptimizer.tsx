@@ -8,6 +8,7 @@ import theme from "../../theme.json";
 import { LocationObject, getCurrentPositionAsync } from "expo-location";
 import { getDatabase, ref, set } from "firebase/database";
 import { database } from '../../../firebase/firebase-config'; // Import Firebase config
+import { useDriverContext } from "@/contexts/DriverContext";
 
 const GOOGLE_API_KEY = Constants?.expoConfig?.extra?.GOOGLE_API_KEY;
 
@@ -33,6 +34,9 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
 
   useEffect(() => {
     fetchPlaces();
+    console.log("qqqqqqqqqq", driverId);
+    
+
   }, [placeIds]);
 
   useEffect(() => {

@@ -6,11 +6,12 @@ import { useUserContext } from '@/contexts/UserContext';
 import { Button, Text } from '@ui-kitten/components';
 import * as Location from 'expo-location';
 import DriverRouteOptimizer from '../components/driver/DriverRouteOptimizer';
+import { useDriverContext } from '@/contexts/DriverContext';
 
 const DriverScreen = () => {
   const { customers } = useCustomerrContext();
   const { user } = useUserContext();
-  
+  const {driverId} = useDriverContext()
   const [customersForThisDriver, setCustomersForThisDriver] = useState<Customer[]>([]);
   const [placeIdsForThisDriver, setPlaceIdsForThisDriver] = useState<string[]>([]);
 
@@ -129,7 +130,7 @@ const DriverScreen = () => {
           splitAmount={0} 
           showRouteInfo={() => alert('slide panel')} 
           driverLocation={location}  // Pass location to RouteOptimizer
-          driverId={user?.id || "to fix later"}
+          driverId={driverId}
         />
       )}
     </SafeAreaView>

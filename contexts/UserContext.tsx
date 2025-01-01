@@ -1,9 +1,11 @@
+import { Driver } from '@/types/User';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 type AuthUser = {
     id?: string;
     email: string;
     companyName: string;
+    driver?: Driver;
 };
 
 type UserContextType = {

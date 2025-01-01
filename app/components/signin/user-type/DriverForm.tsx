@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import db from '@/firebase/firebase-config';
 import { Driver, User } from '@/types/User';
+import { useDriverContext } from '@/contexts/DriverContext';
 
 
 
@@ -32,7 +33,7 @@ const DriverForm: React.FC<DriverFormProps> = ({dismissModal, formHasFocus}) => 
     const {setUser} = useUserContext()
     const auth = getAuth();
     const router = useRouter();
-
+    const {setDriverId} = useDriverContext()
    
   return (
     <View style={styles.container}>
@@ -52,6 +53,8 @@ const DriverForm: React.FC<DriverFormProps> = ({dismissModal, formHasFocus}) => 
                       } else {
                           const foundDrivers: Driver[] = []
                           querySnapshot.forEach((doc) => {
+                            setDriverId(doc.id);
+                            
                           foundDrivers.push({id: doc.id, ...doc.data()} as Driver)               
                         });
                         const foundDriver = foundDrivers.pop() as Driver;
