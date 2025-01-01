@@ -10,10 +10,13 @@ import DriverRouteOptimizer from '../components/driver/DriverRouteOptimizer';
 const DriverScreen = () => {
   const { customers } = useCustomerrContext();
   const { user } = useUserContext();
+  
   const [customersForThisDriver, setCustomersForThisDriver] = useState<Customer[]>([]);
   const [placeIdsForThisDriver, setPlaceIdsForThisDriver] = useState<string[]>([]);
 
   useEffect(() => {
+    console.log(":::::::::::::: ", user?.id);
+    
     const filteredCustomers = customers.filter(customer => customer.driver?.email === user?.email);
     const ids = filteredCustomers.map(customer => customer.placeID);
     setPlaceIdsForThisDriver(ids);
@@ -126,6 +129,7 @@ const DriverScreen = () => {
           splitAmount={0} 
           showRouteInfo={() => alert('slide panel')} 
           driverLocation={location}  // Pass location to RouteOptimizer
+          driverId={user?.id || "to fix later"}
         />
       )}
     </SafeAreaView>

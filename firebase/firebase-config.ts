@@ -3,6 +3,7 @@ import Constants from "expo-constants"
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -27,5 +28,6 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Cloud Firestore and get a reference to the service
  const db = getFirestore(app);
-
+ const database = getDatabase(app);
  export default db
+ export {database};

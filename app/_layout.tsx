@@ -61,8 +61,12 @@ export default function RootLayout() {
                   return <Header companyName={user?.companyName} email={user?.email} />
                 }}} />
 
-                {/* <Stack.Screen name="(screens)/driver-screen" options={{headerShown: true, title:"Driver", headerBackVisible: false}}/> */}
-                <Stack.Screen name="(screens)/customer-screen" options={{headerShown: true, title:"Customer", headerBackVisible: false}}/>
+<Stack.Screen name="(screens)/customer-screen" options={{header: (props) => {
+                  const {user} = useUserContext()
+                  return <Header companyName={user?.companyName} email={user?.email} />
+                }}} />
+
+                {/* <Stack.Screen name="(screens)/customer-screen" options={{headerShown: true, title:"Customer", headerBackVisible: false}}/> */}
                 <Stack.Screen name="+not-found" />
             </Stack>
               <StatusBar style="auto" />
