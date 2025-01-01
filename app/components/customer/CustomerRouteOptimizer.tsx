@@ -5,9 +5,7 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import axios from 'axios';
 import { Button, Text } from '@ui-kitten/components';
 import theme from "../../theme.json";
-import { LocationObject, getCurrentPositionAsync } from "expo-location";
-import { getDatabase, ref, set } from "firebase/database";
-import { database } from '../../../firebase/firebase-config'; // Import Firebase config
+import { LocationObject } from "expo-location";
 
 const GOOGLE_API_KEY = Constants?.expoConfig?.extra?.GOOGLE_API_KEY;
 
@@ -16,10 +14,9 @@ interface RouteOptimizerProps {
   splitAmount: number;
   showRouteInfo: () => void;
   driverLocation: LocationObject | null;
-  driverId: string; // Add driverId to update location
 }
 
-const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAmount, showRouteInfo, driverLocation, driverId }) => {
+const CustomerRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAmount, showRouteInfo, driverLocation }) => {
   const [places, setPlaces] = useState<any[]>([]);
   const [route, setRoute] = useState<any | null>(null);
   const [routeStarted, setRouteStarted] = useState(false);
@@ -47,13 +44,6 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
     }
   }, [places, driverLocation, routeStarted]);
 
-  useEffect(() => {
-    // Update the driver's location in Firebase every time it changes
-    if (driverLocation && driverId) {
-      updateDriverLocationInFirebase(driverLocation);
-    }
-  }, [driverLocation]);
-
   const fetchPlaces = async () => {
     try {
       const placesData = await Promise.all(
@@ -67,17 +57,6 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
     } catch (error) {
       console.error('Error fetching place details:', error);
     }
-  };
-
-  const updateDriverLocationInFirebase = (location: LocationObject) => {
-    console.log(":::::::::::::: updateDriverLocationInFirebase :::::::::::::::");
-    
-    const driverLocationRef = ref(database, `drivers/${driverId}/location`);
-    set(driverLocationRef, {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      timestamp: Date.now(),
-    });
   };
 
   const centerMapOnDriver = () => {
@@ -275,6 +254,7 @@ const styles = StyleSheet.create({
     textTransform:"capitalize",
     textAlign: "center",
     color:"#E4EDF7",
+    
   },
 
   rotatedTextContainer: {
@@ -284,4 +264,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DriverRouteOptimizer;
+export default CustomerRouteOptimizer;

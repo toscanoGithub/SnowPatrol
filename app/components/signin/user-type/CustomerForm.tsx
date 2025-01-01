@@ -39,8 +39,8 @@ const CustomerForm: React.FC<DriverFormProps> = ({dismissModal, formHasFocus}) =
       
             <Formik 
                     initialValues={{
-                      email: "",
-                      companyName: "",
+                      email: "f@f.com",
+                      companyName: "Snow Patrol",
                     }}
                     validationSchema={validationSchema}
                     
