@@ -1,3 +1,5 @@
+import Constants from "expo-constants";
+
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -7,27 +9,50 @@ import { Button } from '@ui-kitten/components';
 import theme from "../theme.json";
 import { useUserContext } from '../../contexts/UserContext';  // Assuming you have UserContext to get customer info
 import { useCustomerrContext } from '@/contexts/CustomerContext';
+import axios from 'axios';
+
+const GOOGLE_API_KEY = Constants?.expoConfig?.extra?.GOOGLE_API_KEY;
 
 interface CustomerScreenProps {}
 
 const CustomerScreen: React.FC<CustomerScreenProps> = () => {
   const [driverId, setDriverId] = useState<string | null>(null);
   const [driverLocation, setDriverLocation] = useState<any>(null);
+  const [customerLocation, setCustomerLocation] = useState<any>(null); // State to store customer location
   const [region, setRegion] = useState({
     latitude: 37.78825, // Default initial latitude
     longitude: -122.4324, // Default initial longitude
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
   });
   const [loading, setLoading] = useState(true);
 
   const { user } = useUserContext();
   const { getCustomerById } = useCustomerrContext();
 
+  const currentCustomer = getCustomerById(user?.id ?? "")
+
+  // Fetching the customer's location using the placeId
   useEffect(() => {
-    console.log("customer id ", user?.id);
-    setDriverId(user?.driver?.id || 'no driver id');
-  }, [user?.id]);
+    if(!currentCustomer?.driver) return;
+    if(!currentCustomer!.driver.id) return;
+    if(!currentCustomer.placeID) return;
+    setDriverId(currentCustomer!.driver!.id);
+
+    if (currentCustomer!.placeID !== "") {
+      // Replace with an API request to fetch customer's geolocation from Google Places API
+      axios.get(`https://maps.googleapis.com/maps/api/place/details/json?placeid=${currentCustomer!.placeID}&key=${GOOGLE_API_KEY}`)
+        .then(response => {
+          const customerLocationData = response.data.result.geometry.location;
+          setCustomerLocation(customerLocationData);
+          // Optionally, center the map on the customer’s location initially
+          centerMapOnCustomer(customerLocationData);
+        })
+        .catch(error => {
+          console.error("Error fetching customer location:", error);
+        });
+    }
+  }, [currentCustomer?.driver]);
 
   // Fetching driver's real-time location once driverId is available
   useEffect(() => {
@@ -55,8 +80,8 @@ const CustomerScreen: React.FC<CustomerScreenProps> = () => {
     const newRegion = {
       latitude: location.latitude,
       longitude: location.longitude,
-      latitudeDelta: 0.05,
-      longitudeDelta: 0.05,
+      latitudeDelta: 0.09,
+      longitudeDelta: 0.04,
     };
     setRegion((prevRegion) => {
       // Update the region only if it's different (to avoid unnecessary re-renders)
@@ -70,8 +95,14 @@ const CustomerScreen: React.FC<CustomerScreenProps> = () => {
     });
   };
 
-  const openGoogleMaps = () => {
-    console.log('Open Google Maps for route');
+  const centerMapOnCustomer = (location: any) => {
+    const newRegion = {
+      latitude: location.lat,
+      longitude: location.lng,
+      latitudeDelta: 0.001,
+      longitudeDelta: 0.001,
+    };
+    setRegion(newRegion);
   };
 
   if (loading) {
@@ -85,18 +116,11 @@ const CustomerScreen: React.FC<CustomerScreenProps> = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Button
-        onPress={openGoogleMaps}
-        style={{ backgroundColor: theme["color-primary-600"] }}
-      >
-        Open Route in Google Maps
-      </Button>
-
       <MapView
         style={styles.map}
         region={region}
         onRegionChangeComplete={(newRegion) => setRegion(newRegion)} // Allow customer to manually move the map
-        showsUserLocation={false}
+        showsUserLocation={false} // Do not show the customer's location on the map
       >
         {driverLocation && (
           <Marker
@@ -106,6 +130,17 @@ const CustomerScreen: React.FC<CustomerScreenProps> = () => {
             }}
             title="Driver's Location"
             pinColor="blue"
+          />
+        )}
+
+        {customerLocation && (
+          <Marker
+            coordinate={{
+              latitude: customerLocation.lat,
+              longitude: customerLocation.lng,
+            }}
+            title={currentCustomer?.address}
+            pinColor="green" // Use green for customer marker
           />
         )}
       </MapView>

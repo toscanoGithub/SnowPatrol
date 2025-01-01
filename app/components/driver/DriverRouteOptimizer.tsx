@@ -89,7 +89,7 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
       const newRegion = {
         latitude: driverLocation.coords.latitude,
         longitude: driverLocation.coords.longitude,
-        latitudeDelta: 0.0922,
+        latitudeDelta: 0.01,
         longitudeDelta: 0.0421,
       };
       setRegion(newRegion);
