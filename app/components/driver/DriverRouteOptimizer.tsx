@@ -5,10 +5,9 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import axios from 'axios';
 import { Button, Text } from '@ui-kitten/components';
 import theme from "../../theme.json";
-import { LocationObject, getCurrentPositionAsync } from "expo-location";
+import { LocationObject } from "expo-location";
 import { getDatabase, ref, set } from "firebase/database";
 import { database } from '../../../firebase/firebase-config'; // Import Firebase config
-import { useDriverContext } from "@/contexts/DriverContext";
 
 const GOOGLE_API_KEY = Constants?.expoConfig?.extra?.GOOGLE_API_KEY;
 
@@ -17,13 +16,19 @@ interface RouteOptimizerProps {
   splitAmount: number;
   showRouteInfo: () => void;
   driverLocation: LocationObject | null;
-  driverId: string; // Add driverId to update location
+  driverId: string;
+}
+
+interface Coordinate {
+  latitude: number;
+  longitude: number;
 }
 
 const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAmount, showRouteInfo, driverLocation, driverId }) => {
   const [places, setPlaces] = useState<any[]>([]);
   const [route, setRoute] = useState<any | null>(null);
   const [routeStarted, setRouteStarted] = useState(false);
+  const [isPolylineLoaded, setIsPolylineLoaded] = useState(false);
   const mapRef = useRef<MapView | null>(null);
   const [region, setRegion] = useState({
     latitude: 37.78825,
@@ -34,9 +39,6 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
 
   useEffect(() => {
     fetchPlaces();
-    console.log("qqqqqqqqqq", driverId);
-    
-
   }, [placeIds]);
 
   useEffect(() => {
@@ -46,13 +48,12 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
   }, [places, driverLocation]);
 
   useEffect(() => {
-    if (places.length > 0 && driverLocation && routeStarted) {
+    if (places.length > 0 && driverLocation) {
       optimizeRoute();
     }
-  }, [places, driverLocation, routeStarted]);
+  }, [places, driverLocation]);
 
   useEffect(() => {
-    // Update the driver's location in Firebase every time it changes
     if (driverLocation && driverId) {
       updateDriverLocationInFirebase(driverLocation);
     }
@@ -74,8 +75,6 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
   };
 
   const updateDriverLocationInFirebase = (location: LocationObject) => {
-    console.log(":::::::::::::: updateDriverLocationInFirebase :::::::::::::::");
-    
     const driverLocationRef = ref(database, `drivers/${driverId}/location`);
     set(driverLocationRef, {
       latitude: location.coords.latitude,
@@ -89,12 +88,12 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
       const newRegion = {
         latitude: driverLocation.coords.latitude,
         longitude: driverLocation.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.0421,
+        latitudeDelta: 0.005, // Zoomed-in delta for driver location
+        longitudeDelta: 0.005, // Zoomed-in delta for driver location
       };
       setRegion(newRegion);
       if (mapRef.current) {
-        mapRef.current.animateToRegion(newRegion, 1000);
+        mapRef.current.animateToRegion(newRegion, 1000); // Smoothly animate to the new region
       }
     }
   };
@@ -121,6 +120,7 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
 
       if (response.data.routes.length > 0) {
         setRoute(response.data.routes[0]);
+        setIsPolylineLoaded(true);
       }
     } catch (error) {
       console.error('Error optimizing route:', error);
@@ -130,43 +130,35 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
   const openGoogleMaps = () => {
     if (!driverLocation || places.length === 0) return;
 
-    // Driver's location as origin
     const origin = `${driverLocation.coords.latitude},${driverLocation.coords.longitude}`;
-
-    // Last place as destination
     const destination = `${places[places.length - 1].geometry.location.lat},${places[places.length - 1].geometry.location.lng}`;
-
-    // Waypoints (all places except the first and last one)
     const waypoints = places.slice(1, -1).map(place => `${place.geometry.location.lat},${place.geometry.location.lng}`).join('|');
 
-    // Construct the Google Maps URL with or without waypoints
     let googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
 
     if (waypoints) {
       googleMapsUrl += `&waypoints=${encodeURIComponent(waypoints)}`;
     }
 
-    console.log('Google Maps URL:', googleMapsUrl); // Debugging
-
-    // Open the Google Maps URL
     Linking.openURL(googleMapsUrl).catch(err => console.error('Error opening Google Maps:', err));
   };
 
   const getPolyline = () => {
     if (!route) return [];
 
-    return route.legs.reduce((acc: any[], leg: any) => {
+    const polylinePoints: Coordinate[] = route.legs.reduce((acc: Coordinate[], leg: any) => {
       leg.steps.forEach((step: any) => {
         const stepPolyline = step.polyline.points;
         acc.push(...decodePolyline(stepPolyline));
       });
       return acc;
     }, []);
+    return polylinePoints;
   };
 
-  const decodePolyline = (encoded: string) => {
+  const decodePolyline = (encoded: string): Coordinate[] => {
     let index = 0;
-    const coordinates: any[] = [];
+    const coordinates: Coordinate[] = [];
     let lat = 0;
     let lng = 0;
 
@@ -204,27 +196,29 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
 
   const resizeText = () => {
     return (splitAmount === 0 ? 16 : 70 / splitAmount);
-  }
+  };
 
-  // Rotate See details text
-    const verticalText = (text: string) => {
-      return (
-        <View style={styles.rotatedTextContainer}>
-          {text.split('').map((char, index) => (
-            <Text key={index} style={[styles.verticalChar, {fontSize: resizeText()}]}>
-              {char}
-            </Text>
-          ))}
-        </View>
-      );
+  const verticalText = (text: string) => {
+    return (
+      <View style={styles.rotatedTextContainer}>
+        {text.split('').map((char, index) => (
+          <Text key={index} style={[styles.verticalChar, { fontSize: resizeText() }]}>
+            {char}
+          </Text>
+        ))}
+      </View>
+    );
+  };
+
+  useEffect(() => {
+    if (driverLocation) {
+      centerMapOnDriver(); // Update region when driver's location changes
     }
+  }, [driverLocation]);
 
   return (
-    <View style={{ position: "relative", flexDirection: "row", flex: 1, }}>
-      <Button
-        onPress={openGoogleMaps}  // Open Google Maps when the button is pressed
-        style={{ backgroundColor: theme["color-primary-600"],}}
-      >
+    <View style={{ position: "relative", flexDirection: "row", flex: 1 }}>
+      <Button onPress={openGoogleMaps} style={{ backgroundColor: theme["color-primary-600"] }}>
         {verticalText("Open in Google Maps")}
       </Button>
 
@@ -245,7 +239,7 @@ const DriverRouteOptimizer: React.FC<RouteOptimizerProps> = ({ placeIds, splitAm
           />
         ))}
 
-        {route && (
+        {route && isPolylineLoaded && (
           <Polyline
             coordinates={getPolyline()}
             strokeColor="#000"
@@ -273,17 +267,15 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1,
   },
-
   verticalChar: {
     writingDirection: 'ltr',
-    textTransform:"capitalize",
+    textTransform: "capitalize",
     textAlign: "center",
-    color:"#E4EDF7",
+    color: "#E4EDF7",
   },
-
   rotatedTextContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
   },
 });
